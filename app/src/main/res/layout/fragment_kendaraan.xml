@@ -1,0 +1,37 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center"
+    tools:context="com.example.kholis.smartparking.fragment.KendaraanFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambahkan data kendaraan"
+        android:gravity="center"
+        android:textSize="@dimen/_20ssp"/>
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tambah_data_kendaraan"
+        android:src="@drawable/ic_plus"
+        android:padding="@dimen/_10sdp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="List data kendaraan"
+        android:gravity="center"
+        android:textSize="@dimen/_20ssp"/>
+    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_data_kendaraan"
+        android:src="@drawable/ic_menu_datamobil"
+        android:padding="@dimen/_10sdp"/>
+
+</LinearLayout>

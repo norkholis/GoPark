@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "465402572466",
+    "firebase_url": "https://gopark-189602.firebaseio.com",
+    "project_id": "gopark-189602",
+    "storage_bucket": "gopark-189602.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:465402572466:android:31ada8d97ef550f6",
+        "android_client_info": {
+          "package_name": "com.example.kholis.smartparking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "465402572466-lp0cn51ugtsch9064nd2of3de3s5j1ad.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kholis.smartparking",
+            "certificate_hash": "1ede552a8aec0924d45f1670743ad17c2f17a21b"
+          }
+        },
+        {
+          "client_id": "465402572466-7lcibo454c7imb57v7bf15tf8gfvijh3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfkxL5eJ_GuliafhDELWaLQlc7SZzwjb0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "465402572466-7lcibo454c7imb57v7bf15tf8gfvijh3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

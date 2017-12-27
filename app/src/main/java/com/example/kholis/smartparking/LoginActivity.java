@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.kholis.smartparking.helper.ApiUtils;
 import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.helper.SharedPrefManager;
 import com.google.android.gms.auth.api.Auth;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.internal.Utils;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,9 +61,11 @@ public class LoginActivity extends AppCompatActivity {
     Context mContext;
     BaseApiService mApiService;
 
-    @BindView(R.id.userid)EditText userid;
-    @BindView(R.id.pass)EditText pass;
-    @BindView(R.id.btn_login)Button btn_login;
+    EditText userid, pass;
+    Button btn_login;
+//    @BindView(R.id.userid)EditText userid;
+//    @BindView(R.id.pass)EditText pass;
+//    @BindView(R.id.btn_login)Button btn_login;
     @BindView(R.id.btn_loginManual)Button btn_loginManual;
     @BindView(R.id.btnGmail)SignInButton btnGmail;
 
@@ -79,6 +83,10 @@ public class LoginActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
+
+        mContext = this;
+        mApiService = ApiUtils.getAPIService();
+        initComponents();
 
         sharedPrefManager = new SharedPrefManager(this);
 
@@ -119,6 +127,20 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
     }
+
+    private void initComponents() {
+        userid = (EditText)findViewById(R.id.userid);
+        pass = (EditText)findViewById(R.id.pass);
+        btn_login = (Button)findViewById(R.id.btn_login);
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestLogin();
+            }
+        });
+    }
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -172,16 +194,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    @OnClick(R.id.btn_login)
-    public void btn_login(View view){
-        requestLogin();
-//        Intent toDashBoard = new Intent(LoginActivity.this, DashBoardActivity.class);
-//
-//        toDashBoard.putExtra("userid", userid.getText().toString());
-//        toDashBoard.putExtra("password", pass.getText().toString());
-//
-//        startActivity(toDashBoard);
-    }
+//    @OnClick(R.id.btn_login)
+//    public void btn_login(View view){
+//        requestLogin();
+////        Intent toDashBoard = new Intent(LoginActivity.this, DashBoardActivity.class);
+////
+////        toDashBoard.putExtra("userid", userid.getText().toString());
+////        toDashBoard.putExtra("password", pass.getText().toString());
+////
+////        startActivity(toDashBoard);
+//    }
 
     @OnClick(R.id.btn_loginManual)
     public void btn_loginManual(View view){
@@ -191,17 +213,20 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void requestLogin(){
+        final String in="";
         mApiService.loginRequest(userid.getText().toString(),pass.getText().toString())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful()){
-
+                            //jsonResult.getString("error").equals("false")
                             try {
                                 JSONObject jsonResult = new JSONObject(response.body().toString());
-                                if (jsonResult.getString("error").equals("false")){
+                                //JSONObject jsonResult = new JSONObject(in);
+                                //JSONObject all = jsonResult.getJSONObject("");
+                                if (jsonResult != null){
                                     Toast.makeText(mContext,"Login Berhasil", Toast.LENGTH_SHORT).show();
-                                    String nama = jsonResult.getJSONObject("user").getString("nama");
+                                    String nama = jsonResult.getJSONObject("").getString("nama_lengkap");
                                     sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, nama);
                                     // Shared Pref ini berfungsi untuk menjadi trigger session login
                                     sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, true);

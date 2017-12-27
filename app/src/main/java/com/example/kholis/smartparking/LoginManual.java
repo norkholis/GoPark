@@ -27,11 +27,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginManual extends AppCompatActivity {
-    @BindView(R.id.reg_nama)EditText reg_nama;
-    @BindView(R.id.reg_email)EditText reg_email;
-    @BindView(R.id.reg_username)EditText reg_username;
-    @BindView(R.id.reg_pass)EditText reg_pass;
-    @BindView(R.id.btn_reg)Button btn_reg;
+//    @BindView(R.id.reg_nama)EditText reg_nama;
+//    @BindView(R.id.reg_email)EditText reg_email;
+//    @BindView(R.id.reg_username)EditText reg_username;
+//    @BindView(R.id.reg_pass)EditText reg_pass;
+//    @BindView(R.id.btn_reg)Button btn_reg;
+
+    EditText reg_nama, reg_email, reg_username, reg_pass,reg_alamat,reg_notelp;
+    Button btn_reg;
 
     Context mContext;
     BaseApiService mApiService;
@@ -47,6 +50,14 @@ public class LoginManual extends AppCompatActivity {
     }
 
     private void initComponents() {
+        reg_nama = (EditText)findViewById(R.id.reg_nama);
+        reg_email = (EditText)findViewById(R.id.reg_email);
+        reg_username = (EditText)findViewById(R.id.reg_username);
+        reg_pass = (EditText)findViewById(R.id.reg_pass);
+        reg_alamat = (EditText)findViewById(R.id.reg_alamat);
+        reg_notelp = (EditText)findViewById(R.id.reg_notelp);
+        btn_reg = (Button)findViewById(R.id.btn_reg);
+
         btn_reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,15 +69,17 @@ public class LoginManual extends AppCompatActivity {
     private void requestRegister() {
         mApiService.registerRequest(reg_nama.getText().toString(),
                 reg_email.getText().toString(),
+                reg_alamat.getText().toString(),
+                reg_notelp.getText().toString(),
                 reg_username.getText().toString(),
                 reg_pass.getText().toString())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if (response.isSuccessful()){
-                            Log.i("debug","Berhasil");
 
                             try{
+                                Log.i("debug","Berhasil. json : " + response.body().string());
                                 JSONObject jsonResult = new JSONObject(response.body().string());
                                 if (jsonResult.getString("error").equals("false")){
                                     Toast.makeText(mContext,"Berhasil Registrasi, Masuk melalui halaman login", Toast.LENGTH_SHORT).show();

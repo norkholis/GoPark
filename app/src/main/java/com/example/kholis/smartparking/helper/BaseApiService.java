@@ -20,6 +20,8 @@ public interface BaseApiService {
     @POST("register")
     Call<ResponseBody> registerRequest(@Field("nama_lengkap") String nama_lengkap,
                                        @Field("email") String email,
+                                       @Field("alamat") String alamat,
+                                       @Field("no_telp") String no_telp,
                                        @Field("username") String username,
                                        @Field("password") String password);
 

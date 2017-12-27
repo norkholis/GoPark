@@ -1,6 +1,8 @@
 package com.example.kholis.smartparking;
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,13 +17,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.kholis.smartparking.fragment.FragmentMap;
 import com.example.kholis.smartparking.fragment.ProfilFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 
@@ -29,6 +36,7 @@ public class DashBoardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     TextView nama_user;
+    ImageView foto_user;
     String result_nama;
 
     NavigationView navigationView = null;
@@ -39,14 +47,33 @@ public class DashBoardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
 
+//        nama_user = (TextView)findViewById(R.id.nama_user);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         initComponents();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
+        nama_user = (TextView)header.findViewById(R.id.nama_user);
+        foto_user = (ImageView)header.findViewById(R.id.foto_user);
+
         Bundle extra = getIntent().getExtras();
         if (extra!=null){
             result_nama = extra.getString("result_nama");
             nama_user.setText(result_nama);
+        }
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if(acct!=null){
+            String personName = acct.getDisplayName();
+            Uri personPhoto = acct.getPhotoUrl();
+            Glide.with(this).load(personPhoto).into(foto_user);
+
+            nama_user.setText(personName);
+
         }
 
 
@@ -124,6 +151,13 @@ public class DashBoardActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_history) {
 
+        }else if (id == R.id.nav_logout){
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+            if(acct != null){
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(this,LoginActivity.class);
+                startActivity(intent);
+            }
         }
         if(fragment != null) {
             FragmentManager fm = getSupportFragmentManager();

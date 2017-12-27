@@ -2,6 +2,7 @@ package com.example.kholis.smartparking.fragment;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,9 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -46,17 +49,21 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
     GoogleMap mGMap;
     //MapView mMapView;
     SupportMapFragment mapFragment;
     GoogleApiClient mGoogleApiClient;
     View view;
+    Context mContext;
+
+    Button getParkLoct;
 
     @BindView(R.id.inTmpParkir)
     EditText inTmpParkir;
@@ -72,9 +79,9 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+
         view = inflater.inflate(R.layout.fragment_map, container, false);
         return view;
-
     }
 
     @Override
@@ -97,22 +104,51 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
 
         mGMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-//        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        mGMap.setMyLocationEnabled(true);
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) getActivity())
-                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) getActivity())
-                .build();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        mGMap.setMyLocationEnabled(true);
+        mGMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                return false;
+            }
+        });
+        mGMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
+            @Override
+            public void onMyLocationClick(@NonNull Location location) {
+
+            }
+        });
+        //goToLocationZoom();
+//        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+//                .addApi(LocationServices.API)
+//                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+//                    @Override
+//                    public void onConnected(@Nullable Bundle bundle) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onConnectionSuspended(int i) {
+//
+//                    }
+//                })
+//                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+//                    @Override
+//                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+//
+//                    }
+//                })
+//                .build();
 
     }
 
@@ -122,20 +158,34 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
         mGMap.moveCamera(update);
     }
 
-    public void geoLocate(View view) throws IOException {
-        String location = inTmpParkir.getText().toString();
-        Geocoder gc = new Geocoder(getActivity());
-        List<Address> list = gc.getFromLocationName(location, 1);
-        Address address = list.get(0);
-        String locality = address.getLocality();
-
-        Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
-
-        double lat = address.getLatitude();
-        double lng = address.getLongitude();
-        goToLocationZoom(lat, lng, 15);
-
-    }
+//    @OnClick(R.id.getParkLoct)
+//    public void getParkLoct(View view) throws IOException {
+//        String location = inTmpParkir.getText().toString();
+//        Geocoder gc = new Geocoder(getActivity());
+//        List<Address> list = gc.getFromLocationName(location, 1);
+//        Address address = list.get(0);
+//        String locality = address.getLocality();
+//
+//        Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
+//
+//        double lat = address.getLatitude();
+//        double lng = address.getLongitude();
+//        goToLocationZoom(lat, lng, 15);
+//    }
+//    public void geoLocate(View view) throws IOException {
+//        String location = inTmpParkir.getText().toString();
+//        Geocoder gc = new Geocoder(getActivity());
+//        List<Address> list = gc.getFromLocationName(location, 1);
+//        Address address = list.get(0);
+//        String locality = address.getLocality();
+//
+//        Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
+//
+//        double lat = address.getLatitude();
+//        double lng = address.getLongitude();
+//        goToLocationZoom(lat, lng, 15);
+//
+//    }
 
     LocationRequest mLocationRequest;
 
@@ -155,7 +205,7 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) getActivity());
+
     }
 
     @Override
@@ -170,6 +220,17 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
 
     @Override
     public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(mContext, "My Location Clikcked", Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
 
     }
 }

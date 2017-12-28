@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -63,8 +64,10 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
     View view;
     Context mContext;
 
-    Button getParkLoct;
+//    Button getParkLoct;
 
+    @BindView(R.id.getParkLoct)
+    Button getParkLoct;
     @BindView(R.id.inTmpParkir)
     EditText inTmpParkir;
 
@@ -79,8 +82,30 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-
         view = inflater.inflate(R.layout.fragment_map, container, false);
+        ButterKnife.bind(this, view);
+
+        getParkLoct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String location = inTmpParkir.getText().toString();
+                Geocoder gc = new Geocoder(getActivity());
+                List<Address> list = null;
+                try {
+                    list = gc.getFromLocationName(location, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Address address = list.get(0);
+                String locality = address.getLocality();
+
+                Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
+
+                double lat = address.getLatitude();
+                double lng = address.getLongitude();
+                goToLocationZoom(lat, lng, 15);
+            }
+        });
         return view;
     }
 
@@ -114,7 +139,6 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-
         mGMap.setMyLocationEnabled(true);
         mGMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -128,6 +152,7 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
 
             }
         });
+
         //goToLocationZoom();
 //        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
 //                .addApi(LocationServices.API)
@@ -152,40 +177,14 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
 
     }
 
+
+
     private void goToLocationZoom(double lat, double lng, float zoom) {
         LatLng ll = new LatLng(lat, lng);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll, zoom);
         mGMap.moveCamera(update);
     }
 
-//    @OnClick(R.id.getParkLoct)
-//    public void getParkLoct(View view) throws IOException {
-//        String location = inTmpParkir.getText().toString();
-//        Geocoder gc = new Geocoder(getActivity());
-//        List<Address> list = gc.getFromLocationName(location, 1);
-//        Address address = list.get(0);
-//        String locality = address.getLocality();
-//
-//        Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
-//
-//        double lat = address.getLatitude();
-//        double lng = address.getLongitude();
-//        goToLocationZoom(lat, lng, 15);
-//    }
-//    public void geoLocate(View view) throws IOException {
-//        String location = inTmpParkir.getText().toString();
-//        Geocoder gc = new Geocoder(getActivity());
-//        List<Address> list = gc.getFromLocationName(location, 1);
-//        Address address = list.get(0);
-//        String locality = address.getLocality();
-//
-//        Toast.makeText(getActivity(), locality, Toast.LENGTH_SHORT).show();
-//
-//        double lat = address.getLatitude();
-//        double lng = address.getLongitude();
-//        goToLocationZoom(lat, lng, 15);
-//
-//    }
 
     LocationRequest mLocationRequest;
 

@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.example.kholis.smartparking.helper.ApiUtils;
 import com.example.kholis.smartparking.helper.BaseApiService;
+import com.example.kholis.smartparking.helper.Helper;
 import com.example.kholis.smartparking.helper.SharedPrefManager;
+import com.example.kholis.smartparking.model.APIUser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -38,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -213,44 +216,69 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void requestLogin(){
-        final String in="";
-        mApiService.loginRequest(userid.getText().toString(),pass.getText().toString())
-                .enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()){
-                            //jsonResult.getString("error").equals("false")
-                            try {
-                                JSONObject jsonResult = new JSONObject(response.body().toString());
-                                //JSONObject jsonResult = new JSONObject(in);
-                                //JSONObject all = jsonResult.getJSONObject("");
-                                if (jsonResult != null){
-                                    Toast.makeText(mContext,"Login Berhasil", Toast.LENGTH_SHORT).show();
-                                    String nama = jsonResult.getJSONObject("").getString("nama_lengkap");
-                                    sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, nama);
-                                    // Shared Pref ini berfungsi untuk menjadi trigger session login
-                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, true);
-                                    Intent intent = new Intent(mContext, DashBoardActivity.class);
-                                    intent.putExtra("result_nama", nama);
-                                    startActivity(intent);
-                                }else{
-                                    String error_message = jsonResult.getString("error_msg");
-                                    Toast.makeText(mContext, error_message, Toast.LENGTH_SHORT).show();
-                                }
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                            }catch (JsonIOException e){
-                                e.printStackTrace();
-                            }
-                        }else {
-                            //Do Nothing
-                        }
-                    }
+        mApiService.loginRequest(userid.getText().toString(),pass.getText().toString()).enqueue(new Callback<List<APIUser>>() {
+            @Override
+            public void onResponse(Call<List<APIUser>> call, Response<List<APIUser>> response) {
+                //login success
+                APIUser user = response.body().get(0);
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("debug", "onFailure:ERROR>"+t.toString());
-                    }
-                });
+                if(user != null){
+                    //login success
+                    Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+                    Helper.setActiveUser(user);
+                    Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
+                    startActivity(intent);
+                } else {
+                    //login error
+                    Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<APIUser>> call, Throwable t) {
+                //login failure
+                Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+//        final String in="";
+//        mApiService.loginRequest(userid.getText().toString(),pass.getText().toString())
+//                .enqueue(new Callback<APIUser>() {
+//                    @Override
+//                    public void onResponse(Call<APIUser> call, Response<APIUser> response) {
+//                        if (response.isSuccessful()){
+//                            //jsonResult.getString("error").equals("false")
+//                            try {
+//                                JSONObject jsonResult = new JSONObject(response.body().getNamaLengkap());
+//                                //JSONObject jsonResult = new JSONObject(in);
+//                                //JSONObject all = jsonResult.getJSONObject("");
+//                                if (jsonResult != null){
+//                                    Toast.makeText(mContext,"Login Berhasil", Toast.LENGTH_SHORT).show();
+//                                    String nama = jsonResult.getString("nama_lengkap");
+//                                    sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA, nama);
+//                                    // Shared Pref ini berfungsi untuk menjadi trigger session login
+//                                    sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, true);
+//                                    Intent intent = new Intent(mContext, DashBoardActivity.class);
+//                                    intent.putExtra("result_nama", nama);
+//                                    startActivity(intent);
+//                                }else{
+//                                    String error_message = jsonResult.getString("error_msg");
+//                                    Toast.makeText(mContext, error_message, Toast.LENGTH_SHORT).show();
+//                                }
+//                            }catch (JSONException e){
+//                                e.printStackTrace();
+//                            }catch (JsonIOException e){
+//                                e.printStackTrace();
+//                            }
+//                        }else {
+//                            //Do Nothing
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<APIUser> call, Throwable t) {
+//
+//                    }
+//
+//                });
     }
 }

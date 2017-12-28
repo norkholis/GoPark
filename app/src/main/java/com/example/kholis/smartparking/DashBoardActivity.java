@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.kholis.smartparking.fragment.FragmentMap;
 import com.example.kholis.smartparking.fragment.ProfilFragment;
+import com.example.kholis.smartparking.model.APIUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.maps.GoogleMap;
@@ -73,6 +74,8 @@ public class DashBoardActivity extends AppCompatActivity
             Glide.with(this).load(personPhoto).into(foto_user);
 
             nama_user.setText(personName);
+
+        }else{
 
         }
 

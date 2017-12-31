@@ -91,9 +91,18 @@ public class LoginActivity extends AppCompatActivity {
         mApiService = ApiUtils.getAPIService();
         initComponents();
 
-        sharedPrefManager = new SharedPrefManager(this);
+//        sharedPrefManager = new SharedPrefManager(this);
+//
+//
+//
+//        if (sharedPrefManager.getSpSudahLogin()){
+//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
+//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+//            finish();
+//        }
 
-        if (sharedPrefManager.getSpSudahLogin()){
+        String namaSP = Helper.getActiveUser().getNamaLengkap();
+        if (namaSP!=null){
             startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
             finish();
@@ -228,6 +237,7 @@ public class LoginActivity extends AppCompatActivity {
                     Helper.setActiveUser(user);
                     Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
                     startActivity(intent);
+                    finish();
                 } else {
                     //login error
                     Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();

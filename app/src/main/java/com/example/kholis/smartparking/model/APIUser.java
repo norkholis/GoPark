@@ -42,6 +42,8 @@ public class APIUser {
     @Expose
     private String tglUpdate;
 
+    private APIUser apiUser;
+
     public String getIdPengguna() {
         return idPengguna;
     }
@@ -198,7 +200,12 @@ public class APIUser {
         return this;
     }
 
-    public APIUser (String idPengguna, String namaLengkap, String alamat, String foto, String email, String password, String noTelp){
+    public APIUser getApiUser(){
+        return apiUser;
+    }
+
+    public APIUser (String username, String idPengguna, String namaLengkap, String alamat, String foto, String email, String password, String noTelp){
+        this.username = username;
         this.idPengguna = idPengguna;
         this.namaLengkap = namaLengkap;
         this.alamat = alamat;

@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +23,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.kholis.smartparking.fragment.FragmentMap;
+import com.example.kholis.smartparking.fragment.HistoryFragment;
+import com.example.kholis.smartparking.fragment.KendaraanFragment;
 import com.example.kholis.smartparking.fragment.ProfilFragment;
+import com.example.kholis.smartparking.helper.Helper;
+import com.example.kholis.smartparking.helper.RetrofitClient;
 import com.example.kholis.smartparking.model.APIUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -30,6 +35,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.pixplicity.easyprefs.library.Prefs;
+
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -76,7 +84,8 @@ public class DashBoardActivity extends AppCompatActivity
             nama_user.setText(personName);
 
         }else{
-
+            String nama = Helper.getActiveUser().getNamaLengkap();
+            nama_user.setText(nama);
         }
 
 
@@ -141,6 +150,7 @@ public class DashBoardActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         Fragment fragment = null;
+        String nama = Helper.getActiveUser().getNamaLengkap();
         int id = item.getItemId();
 
         if (id == R.id.nav_lokasi) {
@@ -148,17 +158,33 @@ public class DashBoardActivity extends AppCompatActivity
                 fragment = new FragmentMap();
             }
         } else if (id == R.id.nav_profil){
-            fragment = new ProfilFragment();
+            ProfilFragment profilFragment = new ProfilFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, profilFragment);
+            transaction.commit();
 
         } else if (id == R.id.nav_data_mobil) {
+            KendaraanFragment kendaraanFragment = new KendaraanFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, kendaraanFragment);
+            transaction.commit();
 
         } else if (id == R.id.nav_history) {
+            HistoryFragment historyFragment = new HistoryFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, historyFragment);
+            transaction.commit();
 
         }else if (id == R.id.nav_logout){
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
             if(acct != null){
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this,LoginActivity.class);
+                startActivity(intent);
+            }else if (nama!=""){
+                Helper.unsetActivUser();
+                Intent intent = new Intent(this,LoginActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         }

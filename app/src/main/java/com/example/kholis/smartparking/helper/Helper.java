@@ -13,7 +13,7 @@ public class Helper {
     public static final String KEY_EMAIL = "email";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_UID = "uid";
-    public static final String KEY_ID = "id";
+    public static final String KEY_ID = "id_pengguna";
     public static final String KEY_PHONE = "telpon";
     public static final String KEY_USERNAME = "username";
     public static final String PUSH_NOTIF_RECEIVED = "notifReceived";
@@ -22,6 +22,7 @@ public class Helper {
     public static final String KEY_ALAMAT = "alamat";
 
     public static void setActiveUser(APIUser apiuser){
+        Prefs.putString(KEY_USERNAME, apiuser.getUsername());
         Prefs.putString(KEY_ID, apiuser.getIdPengguna());
         Prefs.putString(KEY_NAME, apiuser.getNamaLengkap());
         Prefs.putString(KEY_EMAIL, apiuser.getEmail());
@@ -43,7 +44,8 @@ public class Helper {
     }
 
     public static APIUser getActiveUser(){
-        return new APIUser(Prefs.getString(KEY_ID,""),
+        return new APIUser(Prefs.getString(KEY_USERNAME,""),
+                Prefs.getString(KEY_ID,""),
                 Prefs.getString(KEY_NAME,""),
                 Prefs.getString(KEY_ALAMAT,""),
                 Prefs.getString(KEY_IMAGE,""),

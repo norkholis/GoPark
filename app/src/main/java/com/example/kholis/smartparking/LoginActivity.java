@@ -101,12 +101,12 @@ public class LoginActivity extends AppCompatActivity {
 //            finish();
 //        }
 
-        String namaSP = Helper.getActiveUser().getNamaLengkap();
-        if (namaSP!=null){
-            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-            finish();
-        }
+//        String namaSP = Helper.getActiveUser().getNamaLengkap();
+//        if (namaSP!=null){
+//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
+//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+//            finish();
+//        }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override

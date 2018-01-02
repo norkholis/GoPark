@@ -2,11 +2,13 @@ package com.example.kholis.smartparking.fragment;
 
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,10 +32,12 @@ import android.widget.Toast;
 //import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.example.kholis.smartparking.R;
+import com.example.kholis.smartparking.adapter.PlaceAutoComplateAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,16 +46,22 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,13 +74,24 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
     GoogleApiClient mGoogleApiClient;
     View view;
     Context mContext;
+    protected LatLng start;
+    protected LatLng end;
+    private static final String LOG_TAG = "FragmentMap";
+    private PlaceAutoComplateAdapter mAdapter;
+    private ProgressDialog progressDialog;
+    private List<Polyline> polylines;
 
-//    Button getParkLoct;
+    private static final LatLngBounds BOUNDS_JAMAICA= new LatLngBounds(new LatLng(-57.965341647205726, 144.9987719580531),
+            new LatLng(72.77492067739843, -9.998857788741589));
+
+
 
     @BindView(R.id.getParkLoct)
     Button getParkLoct;
     @BindView(R.id.inTmpParkir)
-    EditText inTmpParkir;
+    AutoCompleteTextView inTmpParkir;
+    @BindView(R.id.curLoct)
+    AutoCompleteTextView curLoct;
 
 
     public FragmentMap() {
@@ -84,6 +106,17 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
 
         view = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, view);
+
+        polylines = new ArrayList<>();
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addApi(Places.GEO_DATA_API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        MapsInitializer.initialize(getContext());
+        mGoogleApiClient.connect();
+
+
 
         getParkLoct.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,18 +173,27 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
             return;
         }
         mGMap.setMyLocationEnabled(true);
-        mGMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                return false;
-            }
-        });
-        mGMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
-            @Override
-            public void onMyLocationClick(@NonNull Location location) {
 
-            }
-        });
+        mAdapter = new PlaceAutoComplateAdapter(getActivity(), android.R.layout.simple_list_item_1,
+                mGoogleApiClient, BOUNDS_JAMAICA, null);
+
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+
+        
+
+
+//        mGMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+//            @Override
+//            public boolean onMyLocationButtonClick() {
+//                return false;
+//            }
+//        });
+//        mGMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
+//            @Override
+//            public void onMyLocationClick(@NonNull Location location) {
+//
+//            }
+//        });
 
         //goToLocationZoom();
 //        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())

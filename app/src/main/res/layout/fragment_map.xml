@@ -39,6 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:background="#ffffff"
+                    android:id="@+id/curLoct"
                     android:hint="Lokasi Anda..."/>
                 <View
                     android:layout_width="match_parent"

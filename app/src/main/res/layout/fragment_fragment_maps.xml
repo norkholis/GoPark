@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context="com.example.kholis.smartparking.fragment.FragmentMaps">
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/mapsFrag">
+    </fragment>
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:elevation="@dimen/_100sdp"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="@dimen/_8sdp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_20sdp">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:background="#ffffff"
+                    android:id="@+id/curLoct"
+                    android:hint="Lokasi Anda..."/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_50sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/dotted">
+                </View>
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff"
+                    android:id="@+id/inTmpParkir"
+                    android:hint="Lokasi Tujuan Parkir..."/>
+            </LinearLayout>
+            <Button
+                android:layout_width="@dimen/_36sdp"
+                android:layout_height="@dimen/_36sdp"
+                android:layout_centerVertical="true"
+                android:id="@+id/getParkLoct"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:layout_alignParentRight="true"
+                android:hint="Go"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+    
+
+</FrameLayout>

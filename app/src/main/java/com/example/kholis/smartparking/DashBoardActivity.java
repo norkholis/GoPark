@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.kholis.smartparking.fragment.FragmentMap;
+import com.example.kholis.smartparking.fragment.FragmentMaps;
 import com.example.kholis.smartparking.fragment.HistoryFragment;
 import com.example.kholis.smartparking.fragment.KendaraanFragment;
 import com.example.kholis.smartparking.fragment.ProfilFragment;
@@ -155,7 +156,7 @@ public class DashBoardActivity extends AppCompatActivity
 
         if (id == R.id.nav_lokasi) {
             if(fragment == null){
-                fragment = new FragmentMap();
+                fragment = new FragmentMaps();
             }
         } else if (id == R.id.nav_profil){
             ProfilFragment profilFragment = new ProfilFragment();

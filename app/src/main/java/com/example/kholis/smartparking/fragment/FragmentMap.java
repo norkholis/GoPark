@@ -128,13 +128,16 @@ public class FragmentMap extends Fragment implements OnMapReadyCallback, GoogleA
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mGMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                LatLngBounds bounds = mGMap.getProjection().getVisibleRegion().latLngBounds;
-                mAdapter.setBounds(bounds);
-            }
-        });
+        if(mGMap!=null) {
+
+            mGMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    LatLngBounds bounds = mGMap.getProjection().getVisibleRegion().latLngBounds;
+                    mAdapter.setBounds(bounds);
+                }
+            });
+        }
 
     }
 

@@ -1,6 +1,7 @@
 package com.example.kholis.smartparking.fragment;
 
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -41,6 +43,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     View view;
     GoogleApiClient mGoogleApiClient;
     GeoDataClient mGeoDataClient;
+    GoogleMap mGMap;
     SupportMapFragment supportMapFragment;
     PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProvider;
@@ -53,7 +56,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     AutoCompleteTextView curLoct;
 
 
-    public FragmentMaps () {
+    public FragmentMaps() {
         // Required empty public constructor
     }
 
@@ -62,7 +65,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_fragment_maps,container, false);
+        view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
         ButterKnife.bind(this, view);
 
@@ -114,16 +117,31 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public boolean onMyLocationButtonClick() {
+        Toast.makeText(getContext(), "Something Wrong...", Toast.LENGTH_SHORT).show();
         return false;
     }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-
+        Toast.makeText(getContext(), "Current location:\n"+location,Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mGMap = googleMap;
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
+        googleMap.setOnMyLocationButtonClickListener(this);
+        googleMap.setOnMyLocationClickListener(this);
 
     }
 }

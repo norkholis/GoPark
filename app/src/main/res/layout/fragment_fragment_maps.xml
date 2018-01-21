@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     tools:context="com.example.kholis.smartparking.fragment.FragmentMaps">
 
     <fragment
@@ -33,13 +32,13 @@
                 android:orientation="vertical"
                 android:padding="@dimen/_20sdp">
 
-                <AutoCompleteTextView
+                <fragment
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:background="#ffffff"
-                    android:id="@+id/curLoct"
-                    android:hint="Lokasi Anda..."/>
+                    android:id="@+id/place_auto_complate_fragmentCurr"
+                    class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_5sdp"
@@ -48,12 +47,13 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:background="@drawable/dotted">
                 </View>
-                <AutoCompleteTextView
+                <fragment
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_10sdp"
                     android:background="#ffffff"
-                    android:id="@+id/inTmpParkir"
-                    android:hint="Lokasi Tujuan Parkir..."/>
+                    android:id="@+id/place_auto_complate_fragmentDess"
+                    class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
             </LinearLayout>
             <Button
                 android:layout_width="@dimen/_36sdp"

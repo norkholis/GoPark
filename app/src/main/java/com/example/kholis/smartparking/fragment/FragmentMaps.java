@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -15,12 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
+import com.example.kholis.smartparking.adapter.PlaceAutoComplateAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
@@ -28,6 +30,9 @@ import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,6 +52,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     SupportMapFragment supportMapFragment;
     PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProvider;
+    PlaceAutocompleteFragment mPlaceAutocomplateFragmentCurr, mPlaceAutocomplateFragmentDess;
 
     @BindView(R.id.getParkLoct)
     Button getParkLoct;
@@ -67,8 +73,6 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
-        ButterKnife.bind(this, view);
-
         mGeoDataClient = Places.getGeoDataClient(getContext(), null);
 
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext(), null);
@@ -85,6 +89,8 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapsFrag);
         supportMapFragment.getMapAsync(this);
+
+        ButterKnife.bind(getActivity(), view);
 
         return view;
     }
@@ -117,13 +123,13 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "Something Wrong...", Toast.LENGTH_SHORT).show();
+        Snackbar.make(view, "Get your current location", Snackbar.LENGTH_SHORT);
         return false;
     }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(getContext(), "Current location:\n"+location,Toast.LENGTH_SHORT).show();
+        Snackbar.make(view, "Current location:\n"+location, Snackbar.LENGTH_SHORT);
     }
 
     @Override
@@ -142,6 +148,34 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
+
+        mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
+        mPlaceAutocomplateFragmentCurr.setHint("Lokasi anda");
+        mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
+
+        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
+        mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
+        mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+
+            }
+
+            @Override
+            public void onError(Status status) {
+
+            }
+        });
 
     }
 }

@@ -66,9 +66,6 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText userid, pass;
     Button btn_login;
-//    @BindView(R.id.userid)EditText userid;
-//    @BindView(R.id.pass)EditText pass;
-//    @BindView(R.id.btn_login)Button btn_login;
     @BindView(R.id.btn_loginManual)Button btn_loginManual;
     @BindView(R.id.btnGmail)SignInButton btnGmail;
 
@@ -91,22 +88,6 @@ public class LoginActivity extends AppCompatActivity {
         mApiService = ApiUtils.getAPIService();
         initComponents();
 
-//        sharedPrefManager = new SharedPrefManager(this);
-//
-//
-//
-//        if (sharedPrefManager.getSpSudahLogin()){
-//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
-//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-//            finish();
-//        }
-
-//        String namaSP = Helper.getActiveUser().getNamaLengkap();
-//        if (namaSP!=null){
-//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
-//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
-//            finish();
-//        }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -206,16 +187,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-//    @OnClick(R.id.btn_login)
-//    public void btn_login(View view){
-//        requestLogin();
-////        Intent toDashBoard = new Intent(LoginActivity.this, DashBoardActivity.class);
-////
-////        toDashBoard.putExtra("userid", userid.getText().toString());
-////        toDashBoard.putExtra("password", pass.getText().toString());
-////
-////        startActivity(toDashBoard);
-//    }
 
     @OnClick(R.id.btn_loginManual)
     public void btn_loginManual(View view){
@@ -250,6 +221,13 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
             }
         });
+
+    }
+}
+
+
+
+//Documentation for sign using sharepref
 //        final String in="";
 //        mApiService.loginRequest(userid.getText().toString(),pass.getText().toString())
 //                .enqueue(new Callback<APIUser>() {
@@ -290,5 +268,35 @@ public class LoginActivity extends AppCompatActivity {
 //                    }
 //
 //                });
-    }
-}
+
+
+
+//    @OnClick(R.id.btn_login)
+//    public void btn_login(View view){
+//        requestLogin();
+////        Intent toDashBoard = new Intent(LoginActivity.this, DashBoardActivity.class);
+////
+////        toDashBoard.putExtra("userid", userid.getText().toString());
+////        toDashBoard.putExtra("password", pass.getText().toString());
+////
+////        startActivity(toDashBoard);
+//    }
+
+
+
+//        sharedPrefManager = new SharedPrefManager(this);
+//
+//
+//
+//        if (sharedPrefManager.getSpSudahLogin()){
+//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
+//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+//            finish();
+//        }
+
+//        String namaSP = Helper.getActiveUser().getNamaLengkap();
+//        if (namaSP!=null){
+//            startActivity(new Intent(LoginActivity.this, DashBoardActivity.class)
+//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK));
+//            finish();
+//        }

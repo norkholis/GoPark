@@ -2,6 +2,7 @@ package com.example.kholis.smartparking.fragment;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,6 +97,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         return view;
     }
 
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -132,6 +135,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         Snackbar.make(view, "Current location:\n"+location, Snackbar.LENGTH_SHORT);
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGMap = googleMap;
@@ -159,7 +163,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
             @Override
             public void onError(Status status) {
-
+                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
             }
         });
 
@@ -173,9 +177,23 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
             @Override
             public void onError(Status status) {
+                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
 
             }
         });
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mPlaceAutocomplateFragmentCurr.onActivityResult(requestCode, resultCode, data);
+        mPlaceAutocomplateFragmentDess.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @OnClick(R.id.getParkLoct)
+    public void getParkLoct(View view){
+        Intent i = new Intent(getActivity(), PilihMobilFragment.class);
+        startActivity(i);
     }
 }

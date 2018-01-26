@@ -27,11 +27,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginManual extends AppCompatActivity {
-//    @BindView(R.id.reg_nama)EditText reg_nama;
-//    @BindView(R.id.reg_email)EditText reg_email;
-//    @BindView(R.id.reg_username)EditText reg_username;
-//    @BindView(R.id.reg_pass)EditText reg_pass;
-//    @BindView(R.id.btn_reg)Button btn_reg;
 
     EditText reg_nama, reg_email, reg_username, reg_pass,reg_alamat,reg_notelp;
     Button btn_reg;

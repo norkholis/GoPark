@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +52,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     GoogleApiClient mGoogleApiClient;
     GeoDataClient mGeoDataClient;
     GoogleMap mGMap;
+    LatLng current, destination;
     SupportMapFragment supportMapFragment;
     PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProvider;
@@ -158,6 +160,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
+                current = place.getLatLng();
 
             }
 
@@ -172,7 +175,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-
+                destination = place.getLatLng();
             }
 
             @Override
@@ -193,7 +196,11 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     @OnClick(R.id.getParkLoct)
     public void getParkLoct(View view){
+        Bundle args = new Bundle();
+        args.putParcelable("current", current);
+        args.putParcelable("destination", destination);
         Intent i = new Intent(getActivity(), PilihMobilFragment.class);
+        i.putExtra("bundle", args);
         startActivity(i);
     }
 }

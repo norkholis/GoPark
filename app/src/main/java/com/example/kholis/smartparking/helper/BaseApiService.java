@@ -20,7 +20,7 @@ public interface BaseApiService {
     @FormUrlEncoded
     @POST("login")
     Call<List<APIUser>> loginRequest(@Field("username") String username,
-                            @Field("password")String password);
+                                     @Field("password")String password);
 
     @FormUrlEncoded
     @POST("register")

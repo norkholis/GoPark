@@ -10,11 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.kholis.smartparking.LoginManual;
+
 import com.example.kholis.smartparking.R;
 import com.example.kholis.smartparking.formTambahMobil;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -22,8 +23,11 @@ import butterknife.OnClick;
  */
 public class KendaraanFragment extends Fragment {
 
-    @BindView(R.id.tambah_data_kendaraan)Button tambah_data_kendaraan;
-    @BindView(R.id.list_data_kendaraan)Button list_data_kendaraan;
+    @BindView(R.id.tambah_data_kendaraan)
+    Button tambah_data_kendaraan;
+    @BindView(R.id.list_data_kendaraan)
+    Button list_data_kendaraan;
+    View view;
 
     public KendaraanFragment() {
         // Required empty public constructor
@@ -34,13 +38,18 @@ public class KendaraanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_kendaraan, container, false);
-    }
+        ButterKnife.bind(getActivity());
+        view = inflater.inflate(R.layout.fragment_kendaraan, container, false);
 
-    @OnClick(R.id.tambah_data_kendaraan)
-    public void tambah_data_kendaraan(View view){
-        Intent i = new Intent(getActivity(), formTambahMobil.class);
-        startActivity(i);
+        tambah_data_kendaraan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getActivity(), formTambahMobil.class);
+                startActivity(i);
+            }
+        });
+
+        return view;
     }
 
 }

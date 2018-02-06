@@ -14,6 +14,7 @@ public class SharedPrefManager {
     public static final String SP_USERNAME = "spUsername";
     public static final String SP_ID = "spId";
     public static final String SP_EMAIL = "spEmail";
+    public static final String SP_TOKEN = "spToken";
 
     public static final String SP_SUDAH_LOGIN = "spSudahLogin";
 
@@ -52,9 +53,14 @@ public class SharedPrefManager {
         return sp.getString(SP_EMAIL,"");
     }
 
+    public String getSpToken(){
+        return sp.getString(SP_TOKEN, "");
+    }
+
     public int getSpId(){
         return sp.getInt(SP_ID, 0);
     }
+
     public Boolean getSpSudahLogin(){
         return  sp.getBoolean(SP_SUDAH_LOGIN,false);
     }

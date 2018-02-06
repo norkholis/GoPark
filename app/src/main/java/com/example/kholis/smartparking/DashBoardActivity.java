@@ -90,8 +90,8 @@ public class DashBoardActivity extends AppCompatActivity
             nama_user.setText(personName);
 
         }else{
-            String nama = Helper.getActiveUser().getNamaLengkap();
-            nama_user.setText(nama);
+            //String nama = Helper.getActiveUser().getNamaLengkap();
+            //nama_user.setText(nama);
         }
 
 
@@ -156,7 +156,7 @@ public class DashBoardActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         Fragment fragment = null;
-        String nama = Helper.getActiveUser().getNamaLengkap();
+        //String nama = Helper.getActiveUser().getNamaLengkap();
         int id = item.getItemId();
 
         if (id == R.id.nav_lokasi) {
@@ -187,9 +187,9 @@ public class DashBoardActivity extends AppCompatActivity
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this,LoginActivity.class);
                 startActivity(intent);
-            }else if (nama!=""){
+            }else if (0==0){
                 sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
-                Helper.unsetActivUser();
+                //Helper.unsetActivUser();
                 Intent intent = new Intent(this,LoginActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);

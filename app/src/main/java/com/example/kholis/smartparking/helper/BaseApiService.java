@@ -35,7 +35,7 @@ public interface BaseApiService {
                                        @Field("password") String password);
 
     @GET("kendaraan")
-    Call<List<DataKendaraan>>getSemuakendaraan(@Query("id_pengguna")String id
+    Call<List<DataKendaraan>>getSemuakendaraan(@Query("id_pengguna")int id
                                             ,@Query("_token")String token);
 
 

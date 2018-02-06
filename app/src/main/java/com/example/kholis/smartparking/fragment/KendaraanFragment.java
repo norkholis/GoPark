@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +15,20 @@ import android.widget.Button;
 
 
 import com.example.kholis.smartparking.R;
+import com.example.kholis.smartparking.adapter.KendaraanAdapter;
 import com.example.kholis.smartparking.formTambahMobil;
+import com.example.kholis.smartparking.helper.BaseApiService;
+import com.example.kholis.smartparking.helper.SharedPrefManager;
+import com.example.kholis.smartparking.model.DataKendaraan;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +39,8 @@ public class KendaraanFragment extends Fragment {
     Button tambah_data_kendaraan;
     @BindView(R.id.list_data_kendaraan)
     Button list_data_kendaraan;
+
+
     View view;
 
     public KendaraanFragment() {
@@ -40,6 +54,7 @@ public class KendaraanFragment extends Fragment {
         // Inflate the layout for this fragment
         ButterKnife.bind(getActivity());
         view = inflater.inflate(R.layout.fragment_kendaraan, container, false);
+
 
         tambah_data_kendaraan.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -8,10 +8,11 @@ import android.content.SharedPreferences;
  */
 
 public class SharedPrefManager {
-    public static final String SP_GOPARK_APP = "spGoparkApp";
+    public static final String SP_GO_PARK_APP = "spGoparkApp";
 
     public static final String SP_NAMA = "spName";
     public static final String SP_USERNAME = "spUsername";
+    public static final String SP_ID = "spId";
     public static final String SP_EMAIL = "spEmail";
 
     public static final String SP_SUDAH_LOGIN = "spSudahLogin";
@@ -20,7 +21,7 @@ public class SharedPrefManager {
     SharedPreferences.Editor spEditor;
 
     public SharedPrefManager(Context context){
-        sp = context.getSharedPreferences(SP_GOPARK_APP, Context.MODE_PRIVATE);
+        sp = context.getSharedPreferences(SP_GO_PARK_APP, Context.MODE_PRIVATE);
         spEditor = sp.edit();
     }
 
@@ -51,6 +52,9 @@ public class SharedPrefManager {
         return sp.getString(SP_EMAIL,"");
     }
 
+    public int getSpId(){
+        return sp.getInt(SP_ID, 0);
+    }
     public Boolean getSpSudahLogin(){
         return  sp.getBoolean(SP_SUDAH_LOGIN,false);
     }

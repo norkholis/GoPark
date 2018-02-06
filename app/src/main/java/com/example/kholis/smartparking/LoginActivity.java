@@ -18,6 +18,7 @@ import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.helper.Helper;
 import com.example.kholis.smartparking.helper.SharedPrefManager;
 import com.example.kholis.smartparking.model.APIUser;
+import com.example.kholis.smartparking.model.ListUser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,6 +60,8 @@ public class LoginActivity extends AppCompatActivity {
     private static int RC_SIGN_IN = 2;
     GoogleApiClient mGoogleApiClient;
     FirebaseAuth.AuthStateListener mAuthListener;
+
+    private ArrayList<APIUser> userList;
 
     SharedPrefManager sharedPrefManager;
 
@@ -82,6 +86,17 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login2);
 
         ButterKnife.bind(this);
+
+        userList = new ArrayList<>();
+
+        sharedPrefManager = new SharedPrefManager(this);
+        if (sharedPrefManager.getSpSudahLogin()){
+            Intent i = new Intent(LoginActivity.this, DashBoardActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);;
+            startActivity(i);
+            finish();
+        }
+
         mAuth = FirebaseAuth.getInstance();
 
         mContext = this;
@@ -196,31 +211,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void requestLogin(){
-        mApiService.loginRequest(userid.getText().toString(),pass.getText().toString()).enqueue(new Callback<List<APIUser>>() {
-            @Override
-            public void onResponse(Call<List<APIUser>> call, Response<List<APIUser>> response) {
-                //login success
-                APIUser user = response.body().get(0);
+        mApiService.loginRequest(userid.getText().toString(), pass.getText().toString())
+                .enqueue(new Callback<ListUser>() {
+                    @Override
+                    public void onResponse(Call<ListUser> call, Response<ListUser> response) {
+                        if (response.isSuccessful()){
+                            userList = response.body().getData();
 
-                if(user != null){
-                    //login success
-                    Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
-                    Helper.setActiveUser(user);
-                    Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    //login error
-                    Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-                }
-            }
+                            if (userList != null){
+                                APIUser user =userList.get(0);
+                                String nama = user.getNamaLengkap().toString();
+                                String token = user.getToken().toString();
 
-            @Override
-            public void onFailure(Call<List<APIUser>> call, Throwable t) {
-                //login failure
-                Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
+                                Intent i = new Intent(LoginActivity.this, DashBoardActivity.class)
+                                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                Bundle extras = new Bundle();
+                                extras.putString("nama_lengkap", nama);
+                                extras.putString("token", token);
+                                i.putExtras(extras);
+                                startActivity(i);
+                                finish();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ListUser> call, Throwable t) {
+
+                    }
+                });
 
     }
 }

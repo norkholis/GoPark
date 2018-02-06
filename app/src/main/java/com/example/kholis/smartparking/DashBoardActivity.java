@@ -27,8 +27,10 @@ import com.example.kholis.smartparking.fragment.FragmentMaps;
 import com.example.kholis.smartparking.fragment.HistoryFragment;
 import com.example.kholis.smartparking.fragment.KendaraanFragment;
 import com.example.kholis.smartparking.fragment.ProfilFragment;
+import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.helper.Helper;
 import com.example.kholis.smartparking.helper.RetrofitClient;
+import com.example.kholis.smartparking.helper.SharedPrefManager;
 import com.example.kholis.smartparking.model.APIUser;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -48,6 +50,9 @@ public class DashBoardActivity extends AppCompatActivity
     TextView nama_user;
     ImageView foto_user;
     String result_nama;
+
+    private String nama_lengkap, token;
+    SharedPrefManager sharedPrefManager;
 
     NavigationView navigationView = null;
     Toolbar toolbar = null;
@@ -183,6 +188,7 @@ public class DashBoardActivity extends AppCompatActivity
                 Intent intent = new Intent(this,LoginActivity.class);
                 startActivity(intent);
             }else if (nama!=""){
+                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
                 Helper.unsetActivUser();
                 Intent intent = new Intent(this,LoginActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

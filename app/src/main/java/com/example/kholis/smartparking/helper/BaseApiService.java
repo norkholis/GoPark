@@ -1,6 +1,8 @@
 package com.example.kholis.smartparking.helper;
 
 import com.example.kholis.smartparking.model.APIUser;
+import com.example.kholis.smartparking.model.DataKendaraan;
+import com.example.kholis.smartparking.model.ListUser;
 import com.example.kholis.smartparking.model.ResponseKendaraan;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by norkholis on 25/12/17.
@@ -19,8 +22,8 @@ import retrofit2.http.POST;
 public interface BaseApiService {
     @FormUrlEncoded
     @POST("login")
-    Call<List<APIUser>> loginRequest(@Field("username") String username,
-                                     @Field("password")String password);
+    Call<ListUser> loginRequest(@Field("username") String username,
+                                @Field("password")String password);
 
     @FormUrlEncoded
     @POST("register")
@@ -32,7 +35,8 @@ public interface BaseApiService {
                                        @Field("password") String password);
 
     @GET("kendaraan")
-    Call<ResponseKendaraan>getSemuakendaraan();
+    Call<List<DataKendaraan>>getSemuakendaraan(@Query("id_pengguna")String id
+                                            ,@Query("_token")String token);
 
 
 

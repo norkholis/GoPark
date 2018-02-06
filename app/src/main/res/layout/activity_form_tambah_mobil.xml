@@ -79,12 +79,12 @@
                 android:layout_height="wrap_content">
                 <Button
                     android:layout_width="0dp"
-                    android:layout_weight="1sdp"
+                    android:layout_weight="1"
                     android:src="@drawable/ic_camera_material"
                     android:layout_height="wrap_content" />
                 <Button
                     android:layout_width="0dp"
-                    android:layout_weight="1dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_folder"/>
             </LinearLayout>
@@ -106,12 +106,12 @@
                 android:layout_height="wrap_content">
                 <Button
                     android:layout_width="0dp"
-                    android:layout_weight="1sdp"
+                    android:layout_weight="1"
                     android:src="@drawable/ic_camera_material"
                     android:layout_height="wrap_content" />
                 <Button
                     android:layout_width="0dp"
-                    android:layout_weight="1dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_folder"/>
             </LinearLayout>

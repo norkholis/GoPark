@@ -48,6 +48,7 @@ import butterknife.OnClick;
  * A simple {@link Fragment} subclass.
  */
 public class FragmentMaps extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
     View view;
     GoogleApiClient mGoogleApiClient;
     GeoDataClient mGeoDataClient;
@@ -77,6 +78,8 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
+        ButterKnife.bind(getActivity(), view);
+
         mGeoDataClient = Places.getGeoDataClient(getContext(), null);
 
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext(), null);
@@ -93,8 +96,6 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapsFrag);
         supportMapFragment.getMapAsync(this);
-
-        ButterKnife.bind(getActivity(), view);
 
         return view;
     }
@@ -134,7 +135,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Snackbar.make(view, "Current location:\n"+location, Snackbar.LENGTH_SHORT);
+        Snackbar.make(view, "Current location:\n" + location, Snackbar.LENGTH_SHORT);
     }
 
 
@@ -151,11 +152,18 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mGMap.setMyLocationEnabled(true);
+        } else {
+            // Show rationale and request permission.
+        }
+
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnMyLocationClickListener(this);
 
-        mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
+        mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
         mPlaceAutocomplateFragmentCurr.setHint("Lokasi anda");
         mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -170,7 +178,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment)getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
+        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
         mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
         mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -186,6 +194,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         });
 
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

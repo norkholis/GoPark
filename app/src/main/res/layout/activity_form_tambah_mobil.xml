@@ -81,17 +81,15 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_camera_material"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:id="@+id/captureDepan"/>
                 <Button
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_folder"/>
+                    android:src="@drawable/ic_folder"
+                    android:id="@+id/cariDepan"/>
             </LinearLayout>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Upload"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,32 +106,20 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:src="@drawable/ic_camera_material"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:id="@+id/captureBelakang"/>
                 <Button
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_folder"/>
+                    android:src="@drawable/ic_folder"
+                    android:id="@+id/cariBelakang"/>
             </LinearLayout>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Upload"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/ftMobilDepan"
-                android:text="Foto Depan" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/ftMobilBelakang"
-                android:text="Foto Belakang"/>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tambahkan data"/>
+                android:text="Tambahkan data"
+                android:id="@+id/tambahDataMobil"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
     </ScrollView>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 
 import com.example.kholis.smartparking.R;
@@ -36,12 +38,12 @@ import retrofit2.Response;
 public class KendaraanFragment extends Fragment {
 
     @BindView(R.id.tambah_data_kendaraan)
-    Button tambah_data_kendaraan;
+    ImageButton tambah_data_kendaraan;
     @BindView(R.id.list_data_kendaraan)
-    Button list_data_kendaraan;
+    ImageButton list_data_kendaraan;
 
 
-    View view;
+
 
     public KendaraanFragment() {
         // Required empty public constructor
@@ -52,8 +54,9 @@ public class KendaraanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ButterKnife.bind(getActivity());
-        view = inflater.inflate(R.layout.fragment_kendaraan, container, false);
+        View view = inflater.inflate(R.layout.fragment_kendaraan, container, false);
+
+        ButterKnife.bind(this, view);
 
 
         tambah_data_kendaraan.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +64,16 @@ public class KendaraanFragment extends Fragment {
             public void onClick(View view) {
                 Intent i = new Intent(getActivity(), formTambahMobil.class);
                 startActivity(i);
+            }
+        });
+
+        list_data_kendaraan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PilihMobilFragment pilihMobilFragment = new PilihMobilFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, pilihMobilFragment);
+                transaction.commit();
             }
         });
 

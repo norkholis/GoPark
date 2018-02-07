@@ -13,6 +13,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -34,8 +35,8 @@ public interface BaseApiService {
                                        @Field("username") String username,
                                        @Field("password") String password);
 
-    @GET("kendaraan")
-    Call<List<DataKendaraan>>getSemuakendaraan(@Query("id_pengguna")int id
+    @GET("kendaraan/{id}")
+    Call<List<DataKendaraan>>getSemuakendaraan(@Path("id") int id
                                             ,@Query("_token")String token);
 
 

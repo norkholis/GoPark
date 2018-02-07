@@ -9,9 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
 import com.example.kholis.smartparking.adapter.KendaraanAdapter;
+import com.example.kholis.smartparking.helper.ApiUtils;
 import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.helper.SharedPrefManager;
 import com.example.kholis.smartparking.model.DataKendaraan;
@@ -19,6 +21,7 @@ import com.example.kholis.smartparking.model.DataKendaraan;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,6 +41,7 @@ public class PilihMobilFragment extends Fragment {
 
 
 
+
     public PilihMobilFragment() {
         // Required empty public constructor
     }
@@ -48,16 +52,21 @@ public class PilihMobilFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        final View view = inflater.inflate(R.layout.fragment_pilih_mobil, container, false);
+
         mSharedPreferenceManager = new SharedPrefManager(getContext());
         String token = mSharedPreferenceManager.getSpToken();
         int id = mSharedPreferenceManager.getSpId();
 
+        ButterKnife.bind(getActivity(), view);
+
+        mBaseApiService = ApiUtils.getAPIService();
         mBaseApiService.getSemuakendaraan(id, token).enqueue(new Callback<List<DataKendaraan>>() {
             @Override
             public void onResponse(Call<List<DataKendaraan>> call, Response<List<DataKendaraan>> response) {
                 if (response.isSuccessful()){
                     List<DataKendaraan> listKendaraan = response.body();
-                    recyclerview = rvKendaraan;
+                    recyclerview = (RecyclerView)view.findViewById(R.id.rvKendaraan);
                     mKendaraanAdapter = new KendaraanAdapter(listKendaraan);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(mLayoutManager);
@@ -68,11 +77,14 @@ public class PilihMobilFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<DataKendaraan>> call, Throwable t) {
-
+                String Quotes = "Instropeksi diri, berdo'a nya ditambah lagi, usahanya tambah lagi," +
+                        "semangatnya tambah lagi" +
+                        "Harus tambah dekat lagi sama yang punya hidup";
+                Toast.makeText(getActivity(),Quotes, Toast.LENGTH_LONG).show();
             }
         });
 
-        return inflater.inflate(R.layout.fragment_pilih_mobil, container, false);
+        return view;
     }
 
 }

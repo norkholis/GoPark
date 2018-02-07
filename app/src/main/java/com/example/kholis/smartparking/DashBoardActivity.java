@@ -68,10 +68,12 @@ public class DashBoardActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         initComponents();
 
+        sharedPrefManager = new SharedPrefManager(this);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View header=navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
+        /*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
         nama_user = (TextView)header.findViewById(R.id.nama_user);
         foto_user = (ImageView)header.findViewById(R.id.foto_user);
 
@@ -90,8 +92,8 @@ public class DashBoardActivity extends AppCompatActivity
             nama_user.setText(personName);
 
         }else{
-            //String nama = Helper.getActiveUser().getNamaLengkap();
-            //nama_user.setText(nama);
+            String namaUser = sharedPrefManager.getSpNama();
+            nama_user.setText(namaUser);
         }
 
 
@@ -182,18 +184,22 @@ public class DashBoardActivity extends AppCompatActivity
             transaction.commit();
 
         }else if (id == R.id.nav_logout){
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-            if(acct != null){
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(this,LoginActivity.class);
-                startActivity(intent);
-            }else if (0==0){
-                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
-                //Helper.unsetActivUser();
-                Intent intent = new Intent(this,LoginActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+//            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+//            if(acct != null){
+//                FirebaseAuth.getInstance().signOut();
+//                Intent intent = new Intent(this,LoginActivity.class);
+//                startActivity(intent);
+//            }else if (sharedPrefManager.getSpSudahLogin()){
+//                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
+//                //Helper.unsetActivUser();
+//                Intent intent = new Intent(this,LoginActivity.class)
+//                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                startActivity(intent);
+//            }
+            sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
+            Intent i = new Intent(DashBoardActivity.this, LoginActivity.class);
+            startActivity(i);
+            finish();
         }
         if(fragment != null) {
             FragmentManager fm = getSupportFragmentManager();

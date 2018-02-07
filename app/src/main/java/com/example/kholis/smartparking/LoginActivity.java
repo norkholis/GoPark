@@ -222,6 +222,13 @@ public class LoginActivity extends AppCompatActivity {
                                 APIUser user =userList.get(0);
                                 String nama = user.getNamaLengkap().toString();
                                 String token = user.getToken().toString();
+                                int id = user.getId();
+                                //String foto = user.getFoto().toString();
+
+                                sharedPrefManager.saveSPString(SharedPrefManager.SP_NAMA,nama);
+                                sharedPrefManager.saveSPInt(SharedPrefManager.SP_ID, id);
+                                sharedPrefManager.saveSPString(SharedPrefManager.SP_TOKEN, token);
+                                sharedPrefManager.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, true);
 
                                 Intent i = new Intent(LoginActivity.this, DashBoardActivity.class)
                                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

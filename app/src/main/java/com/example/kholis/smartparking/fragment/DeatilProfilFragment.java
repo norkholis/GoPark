@@ -1,7 +1,6 @@
 package com.example.kholis.smartparking.fragment;
 
-import android.content.Context;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,11 +9,13 @@ import android.view.ViewGroup;
 
 import com.example.kholis.smartparking.R;
 
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class DeatilProfilFragment extends Fragment {
 
-public class ProfilFragment extends Fragment {
 
-
-    public ProfilFragment() {
+    public DeatilProfilFragment() {
         // Required empty public constructor
     }
 
@@ -23,6 +24,9 @@ public class ProfilFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profil, container, false);
+        View view = inflater.inflate(R.layout.fragment_deatil_profil, container, false);
+
+        return view;
     }
+
 }

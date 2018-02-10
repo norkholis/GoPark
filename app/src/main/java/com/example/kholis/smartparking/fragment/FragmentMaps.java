@@ -2,9 +2,12 @@ package com.example.kholis.smartparking.fragment;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,9 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
 import com.example.kholis.smartparking.adapter.PlaceAutoComplateAdapter;
+import com.example.kholis.smartparking.helper.DirectionsParser;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,11 +39,30 @@ import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,12 +72,13 @@ import butterknife.OnClick;
  * A simple {@link Fragment} subclass.
  */
 public class FragmentMaps extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
-    private static final int MY_LOCATION_REQUEST_CODE = 1;
+    private static final int MY_LOCATION_REQUEST_CODE = 500;
     View view;
     GoogleApiClient mGoogleApiClient;
     GeoDataClient mGeoDataClient;
     GoogleMap mGMap;
-    LatLng current, destination;
+    ArrayList<LatLng> listPoint;
+    LatLng current, destination, temp;
     SupportMapFragment supportMapFragment;
     PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProvider;
@@ -96,6 +121,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapsFrag);
         supportMapFragment.getMapAsync(this);
+        listPoint = new ArrayList<>();
 
         return view;
     }
@@ -143,33 +169,49 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap googleMap) {
         mGMap = googleMap;
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_LOCATION_REQUEST_CODE);
             return;
         }
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mGMap.setMyLocationEnabled(true);
-        } else {
-            // Show rationale and request permission.
-        }
+        mGMap.setMyLocationEnabled(true);
 
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setOnMyLocationButtonClickListener(this);
-        googleMap.setOnMyLocationClickListener(this);
+
+        mGMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (listPoint.size()==2){
+                    listPoint.clear();
+                    mGMap.clear();
+                }
+
+                listPoint.add(latLng);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+
+                if (listPoint.size()==1){
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    current = listPoint.get(0);
+                }else{
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    destination = listPoint.get(1);
+                }
+                mGMap.addMarker(markerOptions);
+
+                if (listPoint.size()==2){
+                    //Create the URL to get request from first marker to second marker
+                    String url = getRequestUrl(listPoint.get(0), listPoint.get(1));
+                    TaskRequestDirection taskRequestDirections = new TaskRequestDirection();
+                    taskRequestDirections.execute(url);
+                }
+            }
+        });
 
         mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
         mPlaceAutocomplateFragmentCurr.setHint("Lokasi anda");
         mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                current = place.getLatLng();
-
+                temp = place.getLatLng();
+                mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp, 16));
             }
 
             @Override
@@ -195,21 +237,149 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     }
 
+    private String getRequestUrl(LatLng current, LatLng destination){
+        //Value of origin
+        String str_org = "origin=" + current.latitude +","+current.longitude;
+        //Value of destination
+        String str_dest = "destination=" + destination.latitude+","+destination.longitude;
+        //Set value enable the sensor
+        String sensor = "sensor=false";
+        //Mode for find direction
+        String mode = "mode=driving";
+        //Build the full param
+        String param = str_org +"&" + str_dest + "&" +sensor+"&" +mode;
+        //Output format
+        String output = "json";
+        //Create url to request
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + param;
+        return url;
+    }
 
+    private String requestDirection(String reqUrl) throws IOException{
+        String responseString = "";
+        InputStream inputStream = null;
+        HttpURLConnection httpURLConnection = null;
+        try {
+            URL url = new URL(reqUrl);
+            httpURLConnection = (HttpURLConnection)url.openConnection();
+            httpURLConnection.connect();
+
+            inputStream = httpURLConnection.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            StringBuffer stringBuffer = new StringBuffer();
+            String line = "";
+            while((line = bufferedReader.readLine())!=null){
+                stringBuffer.append(line);
+            }
+
+            responseString = stringBuffer.toString();
+            bufferedReader.close();
+            inputStreamReader.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (inputStream != null){
+                inputStream.close();
+            }
+            httpURLConnection.disconnect();
+        }
+        return responseString;
+    }
+
+    @SuppressLint("MissingPermission")
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        mPlaceAutocomplateFragmentCurr.onActivityResult(requestCode, resultCode, data);
-        mPlaceAutocomplateFragmentDess.onActivityResult(requestCode, resultCode, data);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case MY_LOCATION_REQUEST_CODE:
+                if (grantResults.length> 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    mGMap.setMyLocationEnabled(true);
+                }
+                break;
+        }
     }
 
-    @OnClick(R.id.getParkLoct)
-    public void getParkLoct(View view){
-        Bundle args = new Bundle();
-        args.putParcelable("current", current);
-        args.putParcelable("destination", destination);
-        Intent i = new Intent(getActivity(), PilihMobilFragment.class);
-        i.putExtra("bundle", args);
-        startActivity(i);
+    public class TaskRequestDirection extends AsyncTask<String, Void, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String responseString = "";
+            try {
+                responseString = requestDirection(strings[0]);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
     }
+
+    public class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>>>{
+
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... strings) {
+            JSONObject jsonObject = null;
+            List<List<HashMap<String, String>>> routes = null;
+            try {
+                jsonObject = new JSONObject(strings[0]);
+                DirectionsParser directionsParser = new DirectionsParser();
+                routes = directionsParser.parse(jsonObject);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> lists) {
+            ArrayList points = null;
+
+            PolylineOptions polylineOptions = null;
+
+            for (List<HashMap<String, String>> path : lists) {
+                points = new ArrayList();
+                polylineOptions = new PolylineOptions();
+
+                for (HashMap<String, String> point : path) {
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lon = Double.parseDouble(point.get("lon"));
+
+                    points.add(new LatLng(lat,lon));
+                }
+
+                polylineOptions.addAll(points);
+                polylineOptions.width(15);
+                polylineOptions.color(Color.BLUE);
+                polylineOptions.geodesic(true);
+            }
+
+            if (polylineOptions!=null) {
+                mGMap.addPolyline(polylineOptions);
+            } else {
+                Toast.makeText(getActivity(), "Direction not found!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        mPlaceAutocomplateFragmentCurr.onActivityResult(requestCode, resultCode, data);
+//        mPlaceAutocomplateFragmentDess.onActivityResult(requestCode, resultCode, data);
+//    }
+//
+//    @OnClick(R.id.getParkLoct)
+//    public void getParkLoct(View view){
+//        Bundle args = new Bundle();
+//        args.putParcelable("current", current);
+//        args.putParcelable("destination", destination);
+//        Intent i = new Intent(getActivity(), PilihMobilFragment.class);
+//        i.putExtra("bundle", args);
+//        startActivity(i);
+//    }
 }

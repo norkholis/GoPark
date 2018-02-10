@@ -27,35 +27,30 @@ public class formTambahMobil extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
         setContentView(R.layout.activity_form_tambah_mobil);
 
-        cariBelakang.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        ButterKnife.bind(this);
 
-            }
-        });
     }
 
-//    @OnClick(R.id.cariDepan)
-//    public void cariDepan(){
-//        Intent pickPhotoDepan = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(pickPhotoDepan , 1);
-//    }
-//
-//    @OnClick(R.id.cariBelakang)
-//    public void cariBelakang(){
-//        Intent pickPhotoBelakang = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(pickPhotoBelakang , 1);
-//    }
-//
-//    @OnClick(R.id.captureDepan)
-//    public void captureDepan(){
-//
-//    }
+    @OnClick(R.id.cariDepan)
+    public void cariDepan(){
+        Intent pickPhotoDepan = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhotoDepan , 1);
+    }
+
+    @OnClick(R.id.cariBelakang)
+    public void cariBelakang(){
+        Intent pickPhotoBelakang = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(pickPhotoBelakang , 1);
+    }
+
+    @OnClick(R.id.captureDepan)
+    public void captureDepan(){
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {

@@ -178,7 +178,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         mGMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (listPoint.size()==2){
+                if (listPoint.size()==3){
                     listPoint.clear();
                     mGMap.clear();
                 }
@@ -316,6 +316,8 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            TaskParser taskParser = new TaskParser();
+            taskParser.execute(s);
         }
     }
 

@@ -39,7 +39,7 @@
                     android:background="#ffffff"
                     android:id="@+id/place_auto_complate_fragmentCurr"
                     class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
-                <View
+<!--                <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
@@ -54,6 +54,7 @@
                     android:background="#ffffff"
                     android:id="@+id/place_auto_complate_fragmentDess"
                     class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
+                    -->
             </LinearLayout>
             <Button
                 android:layout_width="@dimen/_36sdp"

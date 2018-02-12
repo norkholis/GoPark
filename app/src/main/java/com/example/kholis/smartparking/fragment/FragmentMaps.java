@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,14 +25,24 @@ import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
 import com.example.kholis.smartparking.adapter.PlaceAutoComplateAdapter;
+import com.example.kholis.smartparking.helper.ApiUtils;
+import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.helper.DirectionsParser;
+import com.example.kholis.smartparking.helper.SharedPrefManager;
+import com.example.kholis.smartparking.model.DataTempat;
+import com.example.kholis.smartparking.model.ListTempatParkir;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
@@ -67,6 +78,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -84,10 +98,20 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     FusedLocationProviderClient mFusedLocationProvider;
     PlaceAutocompleteFragment mPlaceAutocomplateFragmentCurr, mPlaceAutocomplateFragmentDess;
 
+    private LocationRequest locationRequest;
+    private long UPDATE_INTERVAL = 60 * 100;
+    private long FASTEST_INTERVAL = 2000;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private static LatLng jalan;
+
+    BaseApiService mBaseApiService;
+    SharedPrefManager mSharedPrefManager;
+    private List<DataTempat> mListMarker = new ArrayList<>();
+
     @BindView(R.id.getParkLoct)
     Button getParkLoct;
-    @BindView(R.id.inTmpParkir)
-    AutoCompleteTextView inTmpParkir;
+//    @BindView(R.id.inTmpParkir)
+//    AutoCompleteTextView inTmpParkir;
     @BindView(R.id.curLoct)
     AutoCompleteTextView curLoct;
 
@@ -104,6 +128,8 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
         ButterKnife.bind(getActivity(), view);
+
+        mSharedPrefManager = new SharedPrefManager(getContext());
 
         mGeoDataClient = Places.getGeoDataClient(getContext(), null);
 
@@ -122,8 +148,85 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapsFrag);
         supportMapFragment.getMapAsync(this);
         listPoint = new ArrayList<>();
-
+        startLocationUpdate();
         return view;
+    }
+
+    void getDataTempatParkir(){
+        String token = mSharedPrefManager.getSpToken();
+        mBaseApiService = ApiUtils.getAPIService();
+        mBaseApiService.getTempatParkir(token).enqueue(new Callback<ListTempatParkir>() {
+            @Override
+            public void onResponse(Call<ListTempatParkir> call, Response<ListTempatParkir> response) {
+                mListMarker = response.body().getmData();
+                initMarker(mListMarker);
+            }
+
+            @Override
+            public void onFailure(Call<ListTempatParkir> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void initMarker(List<DataTempat> listData){
+        for(int i=0; i<mListMarker.size(); i++){
+            LatLng locationPark = new LatLng(Double.parseDouble(mListMarker.get(i).getLatitude()),Double.parseDouble(mListMarker.get(i).getLongtitude()));
+
+            mGMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                    .position(locationPark).title(mListMarker.get(i).getNamaTempat()));
+
+            LatLng latLng = new LatLng(Double.parseDouble(mListMarker.get(0).getLatitude()), Double.parseDouble(mListMarker.get(0).getLongtitude()));
+
+        }
+    }
+
+    protected void getBarcode(){
+        Location dest = new Location("");
+        dest.setLatitude(destination.latitude);
+        dest.setLongitude(destination.longitude);
+
+        Location otw = new Location("");
+        otw.setLatitude(jalan.latitude);
+        otw.setLongitude(jalan.longitude);
+
+        float distance = dest.distanceTo(otw);
+        if (distance<100){
+            //request to get barcode
+        }
+    }
+
+    protected void startLocationUpdate() {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(locationRequest);
+        LocationSettingsRequest locationSettingsRequest = builder.build();
+
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(getContext());
+        settingsClient.checkLocationSettings(locationSettingsRequest);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback(){
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+            }
+        },Looper.myLooper());
     }
 
 
@@ -150,7 +253,8 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onLocationChanged(Location location) {
-
+        jalan = new LatLng(location.getLatitude(),location.getLongitude());
+        getBarcode();
     }
 
     @Override
@@ -173,12 +277,13 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             return;
         }
         mGMap.setMyLocationEnabled(true);
+        getDataTempatParkir();
 
 
         mGMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (listPoint.size()==3){
+                if (listPoint.size()==2){
                     listPoint.clear();
                     mGMap.clear();
                 }
@@ -188,9 +293,11 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
                 markerOptions.position(latLng);
 
                 if (listPoint.size()==1){
+                    Snackbar.make(view, "Tekan dimana lokasi anda", Snackbar.LENGTH_SHORT);
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                     current = listPoint.get(0);
                 }else{
+                    Snackbar.make(view, "Tekan area tujuan parkir anda", Snackbar.LENGTH_SHORT);
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                     destination = listPoint.get(1);
                 }
@@ -220,20 +327,20 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
-        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
-        mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
-        mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                destination = place.getLatLng();
-            }
-
-            @Override
-            public void onError(Status status) {
-                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
-
-            }
-        });
+//        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
+//        mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
+//        mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                destination = place.getLatLng();
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
+//
+//            }
+//        });
 
     }
 

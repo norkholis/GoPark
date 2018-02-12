@@ -2,6 +2,8 @@ package com.example.kholis.smartparking.helper;
 
 import com.example.kholis.smartparking.model.APIUser;
 import com.example.kholis.smartparking.model.DataKendaraan;
+import com.example.kholis.smartparking.model.DataTempat;
+import com.example.kholis.smartparking.model.ListTempatParkir;
 import com.example.kholis.smartparking.model.ListUser;
 import com.example.kholis.smartparking.model.ResponseKendaraan;
 
@@ -39,6 +41,7 @@ public interface BaseApiService {
     Call<List<DataKendaraan>>getSemuakendaraan(@Path("id") int id
                                             ,@Query("_token")String token);
 
-
+    @GET("tempat")
+    Call<ListTempatParkir>getTempatParkir(@Query("_token")String token);
 
 }

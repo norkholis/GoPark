@@ -67,7 +67,7 @@ public class PilihMobilFragment extends Fragment {
                 if (response.isSuccessful()){
                     List<DataKendaraan> listKendaraan = response.body();
                     recyclerview = (RecyclerView)view.findViewById(R.id.rvKendaraan);
-                    mKendaraanAdapter = new KendaraanAdapter(listKendaraan);
+                    mKendaraanAdapter = new KendaraanAdapter(getContext(),listKendaraan);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(mLayoutManager);
                     recyclerview.setItemAnimator(new DefaultItemAnimator());

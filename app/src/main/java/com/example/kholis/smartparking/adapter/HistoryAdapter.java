@@ -1,82 +1,77 @@
 package com.example.kholis.smartparking.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
-import com.example.kholis.smartparking.model.DataKendaraan;
+import com.example.kholis.smartparking.model.DataHistory;
+import com.example.kholis.smartparking.model.StatusHistory;
 
 import java.util.List;
 
-import butterknife.BindView;
-
 /**
- * Created by norkholis on 06/02/18.
+ * Created by norkholis on 14/02/18.
  */
 
-public class KendaraanAdapter extends RecyclerView.Adapter<KendaraanAdapter.ViewHolder>{
-    private List<DataKendaraan> kendaraans;
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
+    private List<DataHistory> dataHistories ;
+    private List<StatusHistory> statusHistories;
     private Context mContext;
 
-    public KendaraanAdapter(Context context, List<DataKendaraan> kendaraans) {
-        this.mContext = context;
-        this.kendaraans = kendaraans;
+    public HistoryAdapter(List<DataHistory> dataHistories, List<StatusHistory> statusHistories, Context mContext) {
+        this.dataHistories = dataHistories;
+        this.statusHistories = statusHistories;
+        this.mContext = mContext;
     }
 
-
-
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-//        View itemView = LayoutInflater.from(parent.getContext())
-//                      .inflate(R.layout.item_kendaraan, parent, false);
-        View itemView = inflater.inflate(R.layout.item_kendaraan, parent, false);
+        View itemView = inflater.inflate(R.layout.item_history, parent, false);
 
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final DataKendaraan kendaraan = kendaraans.get(position);
-        holder.itJenisMobil.setText(kendaraan.getJenisKendaraan());
-        holder.itNopolMobil.setText(kendaraan.getNopol());
+        final DataHistory history = dataHistories.get(position);
+        final StatusHistory statusHistory = statusHistories.get(position);
+
+        holder.hsWaktuMasuk.setText(history.getWaktuMasuk().toString());
+        holder.hsWaktuKeluar.setText(history.getWaktuKeluar().toString());
+        holder.hsStatus.setText(statusHistory.getMessage().toString());
         holder.setClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 if (isLongClick){
-                    Toast.makeText(mContext, ""+kendaraan.getNopol().toString(), Toast.LENGTH_LONG).show();
+                    //Do Something
                 }else{
-                    Toast.makeText(mContext, ""+kendaraan.getNopol().toString(), Toast.LENGTH_LONG).show();
+                    //Do something
                 }
             }
         });
-    }
 
+    }
 
     @Override
     public int getItemCount() {
-        return kendaraans.size();
+        return 0;
     }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-        private TextView itJenisMobil,itNopolMobil;
+        private TextView hsWaktuMasuk, hsWaktuKeluar, hsStatus;
         private ItemClickListener itemClickListener;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
-            itJenisMobil = (TextView)itemView.findViewById(R.id.itJenisMobil);
-            itNopolMobil = (TextView)itemView.findViewById(R.id.itNopolMobil);
+            hsWaktuMasuk = (TextView)itemView.findViewById(R.id.hsWaktuMasuk);
+            hsWaktuKeluar = (TextView)itemView.findViewById(R.id.hsWaktuKeluar);
+            hsStatus = (TextView)itemView.findViewById(R.id.hsStatus);
             itemView.setTag(itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

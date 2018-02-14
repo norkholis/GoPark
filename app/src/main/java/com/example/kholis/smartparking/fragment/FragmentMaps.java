@@ -15,12 +15,19 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
@@ -58,6 +65,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -85,7 +93,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentMaps extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+public class FragmentMaps extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener {
     private static final int MY_LOCATION_REQUEST_CODE = 500;
     View view;
     GoogleApiClient mGoogleApiClient;
@@ -108,12 +116,18 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     SharedPrefManager mSharedPrefManager;
     private List<DataTempat> mListMarker = new ArrayList<>();
 
+    Spinner sp;
+    List<Integer> listIdSpinner = new ArrayList<>();
+    List<LatLng> spinnerTujuan = new ArrayList<>();
+
     @BindView(R.id.getParkLoct)
     Button getParkLoct;
 //    @BindView(R.id.inTmpParkir)
 //    AutoCompleteTextView inTmpParkir;
     @BindView(R.id.curLoct)
     AutoCompleteTextView curLoct;
+    @BindView(R.id.spinnerLokasiParkir)
+    Spinner spinerLokasiParkir;
 
 
     public FragmentMaps() {
@@ -128,6 +142,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
         ButterKnife.bind(getActivity(), view);
+        sp = (Spinner)view.findViewById(R.id.spinnerLokasiParkir);
 
         mSharedPrefManager = new SharedPrefManager(getContext());
 
@@ -159,6 +174,16 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onResponse(Call<ListTempatParkir> call, Response<ListTempatParkir> response) {
                 mListMarker = response.body().getmData();
+                List<String> listSpinner = new ArrayList<>();
+
+                for (int i=0; i<mListMarker.size(); i++){
+                    listSpinner.add(mListMarker.get(i).getNamaTempat());
+                    listIdSpinner.add(mListMarker.get(i).getId());
+                    spinnerTujuan.add(new LatLng(Double.valueOf(mListMarker.get(i).getLatitude()),Double.valueOf(mListMarker.get(i).getLongtitude()) ));
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, listSpinner);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sp.setAdapter(adapter);
                 initMarker(mListMarker);
             }
 
@@ -175,8 +200,6 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
             mGMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                     .position(locationPark).title(mListMarker.get(i).getNamaTempat()));
-
-            LatLng latLng = new LatLng(Double.parseDouble(mListMarker.get(0).getLatitude()), Double.parseDouble(mListMarker.get(0).getLongtitude()));
 
         }
     }
@@ -272,13 +295,27 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGMap = googleMap;
+        getDataTempatParkir();
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_LOCATION_REQUEST_CODE);
             return;
         }
         mGMap.setMyLocationEnabled(true);
-        getDataTempatParkir();
 
+        sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                String namaTempat = adapterView.getItemAtPosition(position).toString();
+                listIdSpinner.get(position);
+                spinnerTujuan.get(position);
+                Toast.makeText(getContext(),"ID "+listIdSpinner.get(position), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         mGMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -286,6 +323,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
                 if (listPoint.size()==2){
                     listPoint.clear();
                     mGMap.clear();
+                    initMarker(mListMarker);
                 }
 
                 listPoint.add(latLng);
@@ -293,7 +331,6 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
                 markerOptions.position(latLng);
 
                 if (listPoint.size()==1){
-                    Snackbar.make(view, "Tekan dimana lokasi anda", Snackbar.LENGTH_SHORT);
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                     current = listPoint.get(0);
                 }else{
@@ -326,23 +363,19 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
                 Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
             }
         });
-
-//        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
-//        mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
-//        mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                destination = place.getLatLng();
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
-//
-//            }
-//        });
-
     }
+
+//    @Override
+//    public void onDestroyView() {
+//        FragmentManager fm = getChildFragmentManager();
+//        Fragment fragment = (fm.findFragmentById(R.id.place_auto_complate_fragmentCurr));
+//        FragmentTransaction ft = fm.beginTransaction();
+//        ft.remove(fragment);
+//        ft.commitAllowingStateLoss();
+//        super.onDestroyView();
+//
+//    }
+    
 
     private String getRequestUrl(LatLng current, LatLng destination){
         //Value of origin
@@ -405,6 +438,11 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
     }
 
     public class TaskRequestDirection extends AsyncTask<String, Void, String>{
@@ -474,6 +512,25 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             }
         }
     }
+}
+
+
+
+
+//        mPlaceAutocomplateFragmentDess = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentDess);
+//        mPlaceAutocomplateFragmentDess.setHint("Tujuan anda");
+//        mPlaceAutocomplateFragmentDess.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                destination = place.getLatLng();
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
+//
+//            }
+//        });
 
 //    @Override
 //    public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -491,4 +548,3 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 //        i.putExtra("bundle", args);
 //        startActivity(i);
 //    }
-}

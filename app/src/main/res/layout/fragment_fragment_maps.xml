@@ -11,6 +11,12 @@
         class="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/mapsFrag">
     </fragment>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/spinnerLokasiParkir">
+    </Spinner>
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,22 +45,6 @@
                     android:background="#ffffff"
                     android:id="@+id/place_auto_complate_fragmentCurr"
                     class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
-<!--                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/dotted">
-                </View>
-                <fragment
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="#ffffff"
-                    android:id="@+id/place_auto_complate_fragmentDess"
-                    class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
-                    -->
             </LinearLayout>
             <Button
                 android:layout_width="@dimen/_36sdp"
@@ -69,3 +59,22 @@
     
 
 </FrameLayout>
+
+
+
+    <!--                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_50sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/dotted">
+                    </View>
+                    <fragment
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:background="#ffffff"
+                        android:id="@+id/place_auto_complate_fragmentDess"
+                        class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
+                        -->

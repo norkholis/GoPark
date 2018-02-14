@@ -12,12 +12,17 @@ import android.widget.Toast;
 
 import com.example.kholis.smartparking.helper.ApiUtils;
 import com.example.kholis.smartparking.helper.BaseApiService;
+import com.example.kholis.smartparking.model.ListRespReg;
+import com.example.kholis.smartparking.model.RespRegStatus;
+import com.example.kholis.smartparking.model.ResponseRegistrasi;
 import com.google.gson.JsonIOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -31,6 +36,11 @@ public class LoginManual extends AppCompatActivity {
     EditText reg_nama, reg_email, reg_username, reg_pass,reg_alamat,reg_notelp;
     Button btn_reg;
 
+    String disabled_key = "no";
+    String verifikasi_pengguna= "no";
+
+    private ArrayList<RespRegStatus> respReg;
+
     Context mContext;
     BaseApiService mApiService;
 
@@ -40,6 +50,9 @@ public class LoginManual extends AppCompatActivity {
         setContentView(R.layout.activity_login_manual);
 
         mContext = this;
+
+        respReg = new ArrayList<>();
+
         mApiService = ApiUtils.getAPIService();
         initComponents();
     }
@@ -67,37 +80,58 @@ public class LoginManual extends AppCompatActivity {
                 reg_alamat.getText().toString(),
                 reg_notelp.getText().toString(),
                 reg_username.getText().toString(),
-                reg_pass.getText().toString())
-                .enqueue(new Callback<ResponseBody>() {
+                reg_pass.getText().toString(),
+                verifikasi_pengguna,disabled_key)
+                .enqueue(new Callback<ListRespReg>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    public void onResponse(Call<ListRespReg> call, Response<ListRespReg> response) {
                         if (response.isSuccessful()){
-
-                            try{
-                                Log.i("debug","Berhasil. json : " + response.body().string());
-                                JSONObject jsonResult = new JSONObject(response.body().string());
-                                if (jsonResult.getString("error").equals("false")){
-                                    Toast.makeText(mContext,"Berhasil Registrasi, Masuk melalui halaman login", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(mContext, LoginActivity.class));
-                                }else{
-                                    String error_message = jsonResult.getString("error_msg");
-                                    Toast.makeText(mContext, error_message, Toast.LENGTH_SHORT).show();
-                                }
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }else{
-                            Log.i("debug","Registrasi Gagal");
+                            respReg = response.body().getStatusReg();
+                                Intent i = new Intent(LoginManual.this, DashBoardActivity.class);
+                                startActivity(i);
+                                finish();
                         }
+
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.e("debug", "Error >"+t.getMessage());
-                        Toast.makeText(mContext, "Cek Koneksi Internet Anda", Toast.LENGTH_SHORT).show();
+                    public void onFailure(Call<ListRespReg> call, Throwable t) {
+
                     }
                 });
     }
 }
+
+
+
+//.enqueue(new Callback<ResponseBody>() {
+//@Override
+//public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//        if (response.isSuccessful()){
+//
+//        try{
+//        Log.i("debug","Berhasil. json : " + response.body().string());
+//        JSONObject jsonResult = new JSONObject(response.body().string());
+//        if (jsonResult.getString("error").equals("false")){
+//        Toast.makeText(mContext,"Berhasil Registrasi, Masuk melalui halaman login", Toast.LENGTH_SHORT).show();
+//        startActivity(new Intent(mContext, LoginActivity.class));
+//        }else{
+//        String error_message = jsonResult.getString("error_msg");
+//        Toast.makeText(mContext, error_message, Toast.LENGTH_SHORT).show();
+//        }
+//        }catch (JSONException e){
+//        e.printStackTrace();
+//        } catch (IOException e) {
+//        e.printStackTrace();
+//        }
+//        }else{
+//        Log.i("debug","Registrasi Gagal");
+//        }
+//        }
+//
+//@Override
+//public void onFailure(Call<ResponseBody> call, Throwable t) {
+//        Log.e("debug", "Error >"+t.getMessage());
+//        Toast.makeText(mContext, "Cek Koneksi Internet Anda", Toast.LENGTH_SHORT).show();
+//        }
+//        });

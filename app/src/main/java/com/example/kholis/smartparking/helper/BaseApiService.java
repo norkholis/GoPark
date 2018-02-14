@@ -3,8 +3,11 @@ package com.example.kholis.smartparking.helper;
 import com.example.kholis.smartparking.model.APIUser;
 import com.example.kholis.smartparking.model.DataKendaraan;
 import com.example.kholis.smartparking.model.DataTempat;
+import com.example.kholis.smartparking.model.ListDataHistory;
+import com.example.kholis.smartparking.model.ListRespReg;
 import com.example.kholis.smartparking.model.ListTempatParkir;
 import com.example.kholis.smartparking.model.ListUser;
+import com.example.kholis.smartparking.model.RespRegStatus;
 import com.example.kholis.smartparking.model.ResponseKendaraan;
 
 import java.util.List;
@@ -29,13 +32,15 @@ public interface BaseApiService {
                                 @Field("password")String password);
 
     @FormUrlEncoded
-    @POST("register")
-    Call<ResponseBody> registerRequest(@Field("nama_lengkap") String nama_lengkap,
-                                       @Field("email") String email,
-                                       @Field("alamat") String alamat,
-                                       @Field("no_telp") String no_telp,
-                                       @Field("username") String username,
-                                       @Field("password") String password);
+    @POST("registrasi")
+    Call<ListRespReg> registerRequest(@Field("nama_lengkap") String nama_lengkap,
+                                        @Field("email") String email,
+                                        @Field("alamat") String alamat,
+                                        @Field("no_telp") String no_telp,
+                                        @Field("username") String username,
+                                        @Field("password") String password,
+                                        @Field("verifikasi_pengguna")String verifikasi_pengguna,
+                                        @Field("disabled_key")String disabled_key);
 
     @GET("kendaraan/{id}")
     Call<List<DataKendaraan>>getSemuakendaraan(@Path("id") int id
@@ -43,5 +48,10 @@ public interface BaseApiService {
 
     @GET("tempat")
     Call<ListTempatParkir>getTempatParkir(@Query("_token")String token);
+
+    @FormUrlEncoded
+    @POST("history")
+    Call<ListDataHistory>getDataHistory(@Query("_token")String token,
+                                        @Field("id_pengguna") int id_pengguna);
 
 }

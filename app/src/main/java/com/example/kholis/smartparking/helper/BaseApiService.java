@@ -4,6 +4,7 @@ import com.example.kholis.smartparking.model.APIUser;
 import com.example.kholis.smartparking.model.DataKendaraan;
 import com.example.kholis.smartparking.model.DataTempat;
 import com.example.kholis.smartparking.model.ListDataHistory;
+import com.example.kholis.smartparking.model.ListDataPesan;
 import com.example.kholis.smartparking.model.ListRespReg;
 import com.example.kholis.smartparking.model.ListTempatParkir;
 import com.example.kholis.smartparking.model.ListUser;
@@ -18,6 +19,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -53,5 +55,12 @@ public interface BaseApiService {
     @POST("history")
     Call<ListDataHistory>getDataHistory(@Query("_token")String token,
                                         @Field("id_pengguna") int id_pengguna);
+
+    @FormUrlEncoded
+    @POST("pesan")
+    Call<ListDataPesan>getDataPesan(@Query("_token")String token,
+                                    @Field("id_pengguna")int id_pengguna,
+                                    @Field("id_kendaraan")int id_kendaraan,
+                                    @Field("id_tempat")int id_tempatParkir);
 
 }

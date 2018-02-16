@@ -15,6 +15,13 @@
         android:text="Tambah data mobil"
         android:textColor="#ffffff"
         android:textSize="@dimen/_30ssp"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_gravity="center"
+        android:paddingBottom="@dimen/_5sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:src="@drawable/ic_menu_datamobil"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

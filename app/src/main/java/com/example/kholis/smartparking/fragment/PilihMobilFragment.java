@@ -38,6 +38,7 @@ public class PilihMobilFragment extends Fragment {
     SharedPrefManager mSharedPreferenceManager;
     @BindView(R.id.rvKendaraan)
     RecyclerView rvKendaraan;
+    int id_tempatParkir;
 
 
 
@@ -55,8 +56,9 @@ public class PilihMobilFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_pilih_mobil, container, false);
 
         mSharedPreferenceManager = new SharedPrefManager(getContext());
-        String token = mSharedPreferenceManager.getSpToken();
-        int id = mSharedPreferenceManager.getSpId();
+        final String token = mSharedPreferenceManager.getSpToken();
+        final int id = mSharedPreferenceManager.getSpId();
+        id_tempatParkir = getArguments().getInt("id_tempatParkir");
 
         ButterKnife.bind(getActivity(), view);
 
@@ -67,7 +69,7 @@ public class PilihMobilFragment extends Fragment {
                 if (response.isSuccessful()){
                     List<DataKendaraan> listKendaraan = response.body();
                     recyclerview = (RecyclerView)view.findViewById(R.id.rvKendaraan);
-                    mKendaraanAdapter = new KendaraanAdapter(getContext(),listKendaraan);
+                    mKendaraanAdapter = new KendaraanAdapter(getContext(),listKendaraan,id_tempatParkir,id, token);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                     recyclerview.setLayoutManager(mLayoutManager);
                     recyclerview.setItemAnimator(new DefaultItemAnimator());

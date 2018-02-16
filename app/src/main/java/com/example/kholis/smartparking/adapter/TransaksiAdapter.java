@@ -8,65 +8,66 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.kholis.smartparking.R;
-import com.example.kholis.smartparking.model.DataHistory;
-import com.example.kholis.smartparking.model.StatusHistory;
+import com.example.kholis.smartparking.model.DataPesan;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
 /**
- * Created by norkholis on 14/02/18.
+ * Created by norkholis on 16/02/18.
  */
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
-    private List<DataHistory> dataHistories ;
+public class TransaksiAdapter extends RecyclerView.Adapter<TransaksiAdapter.ViewHolder> {
+    private List<DataPesan> dataPesans;
     private Context mContext;
 
-    public HistoryAdapter(List<DataHistory> dataHistories, Context mContext) {
-        this.dataHistories = dataHistories;
+    public TransaksiAdapter(List<DataPesan> dataPesans, Context mContext) {
+        this.dataPesans = dataPesans;
         this.mContext = mContext;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView = inflater.inflate(R.layout.item_history, parent, false);
-
+        View itemView = inflater.inflate(R.layout.item_transaksi, parent, false);
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final DataHistory history = dataHistories.get(position);
+        final DataPesan pesan = dataPesans.get(position);
 
-        holder.hsWaktuMasuk.setText(history.getWaktuMasuk().toString());
-        holder.hsWaktuKeluar.setText(history.getWaktuKeluar().toString());
+        holder.trid.setText(pesan.getId());
+        holder.trwaktu.setText(pesan.getCreatedAt());
+        holder.trstatus.setText(pesan.getStatus());
         holder.setClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 if (isLongClick){
-                    //Do Something
+                    //showing barcode
                 }else{
-                    //Do something
+                    //showing barcode
                 }
             }
         });
-
     }
 
     @Override
     public int getItemCount() {
-        return dataHistories.size();
+        return dataPesans.size();
     }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-        private TextView hsWaktuMasuk, hsWaktuKeluar;
+        private TextView trid, trwaktu, trstatus;
         private ItemClickListener itemClickListener;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            hsWaktuMasuk = (TextView)itemView.findViewById(R.id.hsWaktuMasuk);
-            hsWaktuKeluar = (TextView)itemView.findViewById(R.id.hsWaktuKeluar);
+            trid = (TextView)itemView.findViewById(R.id.trid);
+            trwaktu = (TextView)itemView.findViewById(R.id.trwaktu);
+            trstatus = (TextView)itemView.findViewById(R.id.trstatus);
             itemView.setTag(itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

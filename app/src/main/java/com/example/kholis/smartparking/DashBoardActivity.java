@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.kholis.smartparking.fragment.AktivitasFragment;
 import com.example.kholis.smartparking.fragment.FragmentMap;
 import com.example.kholis.smartparking.fragment.FragmentMaps;
 import com.example.kholis.smartparking.fragment.HistoryFragment;
@@ -175,6 +176,12 @@ public class DashBoardActivity extends AppCompatActivity
             KendaraanFragment kendaraanFragment = new KendaraanFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, kendaraanFragment);
+            transaction.commit();
+
+        }else if (id == R.id.nav_transaksi){
+            AktivitasFragment aktivitasFragment = new AktivitasFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, aktivitasFragment);
             transaction.commit();
 
         } else if (id == R.id.nav_history) {

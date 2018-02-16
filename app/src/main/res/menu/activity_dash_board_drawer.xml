@@ -19,6 +19,11 @@
             android:title="Data Mobil"
             />
         <item
+            android:id="@+id/nav_transaksi"
+            android:icon="@drawable/ic_transaksi"
+            android:title="Aktivitas"
+            />
+        <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_menu_history"
             android:title="History" />

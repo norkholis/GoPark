@@ -11,12 +11,29 @@
         class="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/mapsFrag">
     </fragment>
-    <Spinner
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
         android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/spinnerLokasiParkir">
-    </Spinner>
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:elevation="@dimen/_10sdp"
+        android:background="#ffffff"
+        app:cardCornerRadius="@dimen/_8sdp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Masukkan lokasi tujuan parkir"
+            android:padding="@dimen/_5sdp"/>
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/spinnerLokasiParkir">
+        </Spinner>
+    </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,27 +50,27 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="@dimen/_20sdp">
 
-                <fragment
+        <!--        <fragment
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:background="#ffffff"
                     android:id="@+id/place_auto_complate_fragmentCurr"
-                    class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
+                    class="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />-->
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_36sdp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/getParkLoct"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:layout_alignParentRight="true"
+                    android:hint="Parkir"/>
             </LinearLayout>
-            <Button
-                android:layout_width="@dimen/_36sdp"
-                android:layout_height="@dimen/_36sdp"
-                android:layout_centerVertical="true"
-                android:id="@+id/getParkLoct"
-                android:layout_marginRight="@dimen/_20sdp"
-                android:layout_alignParentRight="true"
-                android:hint="Go"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
     

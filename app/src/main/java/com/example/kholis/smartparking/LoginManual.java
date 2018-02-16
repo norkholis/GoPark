@@ -34,14 +34,15 @@ import retrofit2.Response;
 public class LoginManual extends AppCompatActivity {
 
     EditText reg_nama, reg_email, reg_username, reg_pass,reg_alamat,reg_notelp;
-    Button btn_reg;
+    Button btn_reg, testin;
 
     String disabled_key = "no";
     String verifikasi_pengguna= "no";
 
-    private ArrayList<RespRegStatus> respReg;
+    ArrayList<RespRegStatus> respReg;
+    private Context context;
 
-    Context mContext;
+
     BaseApiService mApiService;
 
     @Override
@@ -49,12 +50,55 @@ public class LoginManual extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_manual);
 
-        mContext = this;
+        context = this;
 
         respReg = new ArrayList<>();
 
         mApiService = ApiUtils.getAPIService();
         initComponents();
+
+        btn_reg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mApiService.registerRequest(reg_nama.getText().toString(),
+                        reg_email.getText().toString(),
+                        reg_alamat.getText().toString(),
+                        reg_notelp.getText().toString(),
+                        reg_username.getText().toString(),
+                        reg_pass.getText().toString(),
+                        verifikasi_pengguna,disabled_key)
+                        .enqueue(new Callback<ListRespReg>() {
+                            @Override
+                            public void onResponse(Call<ListRespReg> call, Response<ListRespReg> response) {
+                                if (response.isSuccessful()){
+                                    respReg = response.body().getStatusReg();
+                                    if (respReg!=null){
+                                        Intent i = new Intent(LoginManual.this, LoginActivity.class)
+                                                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+                                        startActivity(i);
+                                    }else{
+                                        Toast.makeText(LoginManual.this, "Something wrong in model", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                Toast.makeText(LoginManual.this, "Something wrong in response", Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ListRespReg> call, Throwable t) {
+
+                            }
+                        });
+            }
+        });
+
+        testin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(LoginManual.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 
     private void initComponents() {
@@ -64,41 +108,40 @@ public class LoginManual extends AppCompatActivity {
         reg_pass = (EditText)findViewById(R.id.reg_pass);
         reg_alamat = (EditText)findViewById(R.id.reg_alamat);
         reg_notelp = (EditText)findViewById(R.id.reg_notelp);
+        testin = (Button)findViewById(R.id.testin);
         btn_reg = (Button)findViewById(R.id.btn_reg);
 
-        btn_reg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestRegister();
-            }
-        });
     }
 
     private void requestRegister() {
-        mApiService.registerRequest(reg_nama.getText().toString(),
-                reg_email.getText().toString(),
-                reg_alamat.getText().toString(),
-                reg_notelp.getText().toString(),
-                reg_username.getText().toString(),
-                reg_pass.getText().toString(),
-                verifikasi_pengguna,disabled_key)
-                .enqueue(new Callback<ListRespReg>() {
-                    @Override
-                    public void onResponse(Call<ListRespReg> call, Response<ListRespReg> response) {
-                        if (response.isSuccessful()){
-                            respReg = response.body().getStatusReg();
-                                Intent i = new Intent(LoginManual.this, DashBoardActivity.class);
-                                startActivity(i);
-                                finish();
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<ListRespReg> call, Throwable t) {
-
-                    }
-                });
+//        mApiService.registerRequest(reg_nama.getText().toString(),
+//                reg_email.getText().toString(),
+//                reg_alamat.getText().toString(),
+//                reg_notelp.getText().toString(),
+//                reg_username.getText().toString(),
+//                reg_pass.getText().toString(),
+//                verifikasi_pengguna,disabled_key)
+//                .enqueue(new Callback<ListRespReg>() {
+//                    @Override
+//                    public void onResponse(Call<ListRespReg> call, Response<ListRespReg> response) {
+//                        if (response.isSuccessful()){
+//                            respReg = response.body().getStatusReg();
+//                            if (respReg!=null){
+//                                Intent i = new Intent(LoginManual.this, LoginActivity.class)
+//                                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+//                                context.startActivity(i);
+//                            }else{
+//                                Toast.makeText(LoginManual.this, "Something wrong in model", Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                        Toast.makeText(LoginManual.this, "Something wrong in response", Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<ListRespReg> call, Throwable t) {
+//
+//                    }
+//                });
     }
 }
 

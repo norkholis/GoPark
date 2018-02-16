@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.kholis.smartparking.R;
 import com.example.kholis.smartparking.adapter.HistoryAdapter;
@@ -52,6 +53,7 @@ public class HistoryFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_history, container, false);
 
+
         mSharedPrefManager = new SharedPrefManager(getContext());
         String token = mSharedPrefManager.getSpToken().toString();
         int id = mSharedPrefManager.getSpId();
@@ -64,9 +66,8 @@ public class HistoryFragment extends Fragment {
             public void onResponse(Call<ListDataHistory> call, Response<ListDataHistory> response) {
                if (response.isSuccessful()){
                 List<DataHistory> dataHistoryList = response.body().getData();
-                List<StatusHistory> statusHistoryList = (List<StatusHistory>) response.body().getStatus();
                 recyclerView = (RecyclerView)view.findViewById(R.id.rvHistory);
-                mHistoryAdapter = new HistoryAdapter(dataHistoryList, statusHistoryList,getContext());
+                mHistoryAdapter = new HistoryAdapter(dataHistoryList,getContext());
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
                 recyclerView.setLayoutManager(mLayoutManager);
                 recyclerView.setItemAnimator(new DefaultItemAnimator());

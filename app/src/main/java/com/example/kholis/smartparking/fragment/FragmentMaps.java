@@ -3,10 +3,13 @@ package com.example.kholis.smartparking.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
@@ -18,6 +21,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -77,6 +82,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -95,16 +101,18 @@ import retrofit2.Response;
  */
 public class FragmentMaps extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener {
     private static final int MY_LOCATION_REQUEST_CODE = 500;
+    Button getParkLoct;
     View view;
     GoogleApiClient mGoogleApiClient;
     GeoDataClient mGeoDataClient;
     GoogleMap mGMap;
+    int idDestination;
     ArrayList<LatLng> listPoint;
     LatLng current, destination, temp;
     SupportMapFragment supportMapFragment;
     PlaceDetectionClient mPlaceDetectionClient;
     FusedLocationProviderClient mFusedLocationProvider;
-    PlaceAutocompleteFragment mPlaceAutocomplateFragmentCurr, mPlaceAutocomplateFragmentDess;
+//    PlaceAutocompleteFragment mPlaceAutocomplateFragmentCurr, mPlaceAutocomplateFragmentDess;
 
     private LocationRequest locationRequest;
     private long UPDATE_INTERVAL = 60 * 100;
@@ -120,12 +128,9 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
     List<Integer> listIdSpinner = new ArrayList<>();
     List<LatLng> spinnerTujuan = new ArrayList<>();
 
-    @BindView(R.id.getParkLoct)
-    Button getParkLoct;
-//    @BindView(R.id.inTmpParkir)
-//    AutoCompleteTextView inTmpParkir;
-    @BindView(R.id.curLoct)
-    AutoCompleteTextView curLoct;
+
+//    @BindView(R.id.curLoct)
+//    AutoCompleteTextView curLoct;
     @BindView(R.id.spinnerLokasiParkir)
     Spinner spinerLokasiParkir;
 
@@ -142,6 +147,7 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         view = inflater.inflate(R.layout.fragment_fragment_maps, container, false);
 
         ButterKnife.bind(getActivity(), view);
+        getParkLoct = (Button)view.findViewById(R.id.getParkLoct);
         sp = (Spinner)view.findViewById(R.id.spinnerLokasiParkir);
 
         mSharedPrefManager = new SharedPrefManager(getContext());
@@ -162,7 +168,20 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapsFrag);
         supportMapFragment.getMapAsync(this);
-        listPoint = new ArrayList<>();
+
+        getParkLoct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PilihMobilFragment pilMob = new PilihMobilFragment();
+                Bundle args = new Bundle();
+                args.putInt("id_tempatParkir", idDestination);
+                pilMob.setArguments(args);
+
+
+                getFragmentManager().beginTransaction().add(R.id.fragment_container, pilMob).commit();
+            }
+        });
+
         startLocationUpdate();
         return view;
     }
@@ -215,7 +234,41 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
 
         float distance = dest.distanceTo(otw);
         if (distance<100){
-            //request to get barcode
+            createWifiAccessPoint();
+        }
+    }
+
+    private void createWifiAccessPoint(){
+        WifiManager wifiManager = (WifiManager)getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager.isWifiEnabled()){
+            wifiManager.setWifiEnabled(false);
+        }
+        Method[] wmMethods = wifiManager.getClass().getDeclaredMethods();
+        boolean methodFound = false;
+        for (Method method:wmMethods){
+            if (method.getName().equals("setWifiApEnabled")){
+                WifiConfiguration hostpotConf = new WifiConfiguration();
+                hostpotConf.SSID = "L 5241 IF";
+                hostpotConf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+                hostpotConf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+                hostpotConf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+                hostpotConf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+
+                try {
+                    Method setWifiApMethod = wifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+                    boolean apstatus = (Boolean)setWifiApMethod.invoke(wifiManager, hostpotConf, true);
+
+                    Method isWifiApEnabledMethod = wifiManager.getClass().getMethod("isWifiEnabled");
+                    while(!(Boolean)isWifiApEnabledMethod.invoke(wifiManager)){};
+                    Method getWifiApStateMethod = wifiManager.getClass().getMethod("getWifiApState");
+                    int apstate=(Integer)getWifiApStateMethod.invoke(wifiManager);
+                    Method getWifiApConfigurationMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
+                    hostpotConf=(WifiConfiguration)getWifiApConfigurationMethod.invoke(wifiManager);
+                    Log.e("CLIENT", "\nSSID:"+hostpotConf.SSID+"\nPassword:"+hostpotConf.preSharedKey+"\n");
+                }catch (Exception e){
+                    Log.e(this.getClass().toString(), "createWifiAccessPoint: ",e );
+                }
+            }
         }
     }
 
@@ -301,14 +354,18 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
             return;
         }
         mGMap.setMyLocationEnabled(true);
+        View locationButton = ((View)view.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        rlp.setMargins(0, 180, 180, 0);
 
         sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                String namaTempat = adapterView.getItemAtPosition(position).toString();
-                listIdSpinner.get(position);
-                spinnerTujuan.get(position);
-                Toast.makeText(getContext(),"ID "+listIdSpinner.get(position), Toast.LENGTH_LONG).show();
+                idDestination = listIdSpinner.get(position);
+                destination = spinnerTujuan.get(position);
             }
 
             @Override
@@ -320,49 +377,38 @@ public class FragmentMaps extends Fragment implements OnMapReadyCallback, Google
         mGMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                if (listPoint.size()==2){
-                    listPoint.clear();
-                    mGMap.clear();
-                    initMarker(mListMarker);
-                }
+                current = null;
+                mGMap.clear();
+                initMarker(mListMarker);
 
-                listPoint.add(latLng);
+                current = latLng;
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
-                if (listPoint.size()==1){
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    current = listPoint.get(0);
-                }else{
-                    Snackbar.make(view, "Tekan area tujuan parkir anda", Snackbar.LENGTH_SHORT);
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    destination = listPoint.get(1);
-                }
                 mGMap.addMarker(markerOptions);
 
-                if (listPoint.size()==2){
                     //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoint.get(0), listPoint.get(1));
-                    TaskRequestDirection taskRequestDirections = new TaskRequestDirection();
-                    taskRequestDirections.execute(url);
-                }
+                String url = getRequestUrl(current, destination);
+                TaskRequestDirection taskRequestDirections = new TaskRequestDirection();
+                taskRequestDirections.execute(url);
             }
         });
 
-        mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
-        mPlaceAutocomplateFragmentCurr.setHint("Lokasi anda");
-        mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                temp = place.getLatLng();
-                mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp, 16));
-            }
-
-            @Override
-            public void onError(Status status) {
-                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
-            }
-        });
+//        mPlaceAutocomplateFragmentCurr = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.place_auto_complate_fragmentCurr);
+//        mPlaceAutocomplateFragmentCurr.setHint("Lokasi anda");
+//        mPlaceAutocomplateFragmentCurr.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                temp = place.getLatLng();
+//                mGMap.moveCamera(CameraUpdateFactory.newLatLngZoom(temp, 16));
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                Snackbar.make(view, "Error connection", Snackbar.LENGTH_SHORT);
+//            }
+//        });
     }
 
 //    @Override

@@ -13,11 +13,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kholis.smartparking.R;
+import com.example.kholis.smartparking.helper.ApiUtils;
+import com.example.kholis.smartparking.helper.BaseApiService;
 import com.example.kholis.smartparking.model.DataKendaraan;
+import com.example.kholis.smartparking.model.ListDataPesan;
 
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by norkholis on 06/02/18.
@@ -26,10 +32,18 @@ import butterknife.BindView;
 public class KendaraanAdapter extends RecyclerView.Adapter<KendaraanAdapter.ViewHolder>{
     private List<DataKendaraan> kendaraans;
     private Context mContext;
+    private int id_tempatParkir;
+    private int id_pengguna;
+    private String token;
 
-    public KendaraanAdapter(Context context, List<DataKendaraan> kendaraans) {
+    BaseApiService mBaseApiService;
+
+    public KendaraanAdapter(Context context, List<DataKendaraan> kendaraans, int id_tempatParkir, int id_pengguna, String token) {
         this.mContext = context;
         this.kendaraans = kendaraans;
+        this.id_tempatParkir = id_tempatParkir;
+        this.id_pengguna = id_pengguna;
+        this.token = token;
     }
 
 
@@ -53,7 +67,21 @@ public class KendaraanAdapter extends RecyclerView.Adapter<KendaraanAdapter.View
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
                 if (isLongClick){
-                    Toast.makeText(mContext, ""+kendaraan.getNopol().toString(), Toast.LENGTH_LONG).show();
+                    int id_kendaraan = kendaraan.getId();
+                    mBaseApiService = ApiUtils.getAPIService();
+                    mBaseApiService.getDataPesan(token, id_pengguna, id_kendaraan, id_tempatParkir)
+                            .enqueue(new Callback<ListDataPesan>() {
+                                @Override
+                                public void onResponse(Call<ListDataPesan> call, Response<ListDataPesan> response) {
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<ListDataPesan> call, Throwable t) {
+
+                                }
+                            });
+
                 }else{
                     Toast.makeText(mContext, ""+kendaraan.getNopol().toString(), Toast.LENGTH_LONG).show();
                 }

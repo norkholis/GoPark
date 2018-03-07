@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.kholis.smartparking.PhoneNumberAuthActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/role_auth"
+        android:padding="@dimen/_10sdp"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/nomerTelp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:hint="Masukkan nomer telp"
+        android:inputType="phone" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kirim verifikasi"
+        android:layout_gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:id="@+id/btnVerif"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@drawable/dotted"></View>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Masukkan kode verifikasi"
+        android:layout_gravity="center"
+        android:inputType="phone"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/kodeVerif"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Konfirmasi kode"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:id="@+id/btnVerifToRegister"/>
+</LinearLayout>
